@@ -80,10 +80,17 @@ function load() {
   if (!Array.isArray(DB.modes)) {
     DB.modes = [];
   }
+  // Ensure at least one main admin always exists
   if (!DB.admins || Object.keys(DB.admins).length === 0) {
     DB.admins = {
       "admin": { role: "main", password: "admin", perms: ['all'] }
     };
+  } else {
+    // Check if there is at least one main admin — if not, restore default
+    const hasMainAdmin = Object.values(DB.admins).some(a => a.role === 'main');
+    if (!hasMainAdmin) {
+      DB.admins["admin"] = { role: "main", password: "admin", perms: ['all'] };
+    }
   }
 }
 
@@ -1515,15 +1522,23 @@ function adminLogin() {
   load();
   const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
-  
+
   if (!user || !pass) { toast('ইউজারনেম ও পাসওয়ার্ড দিন!', 'error'); return; }
-  
-  if (DB.admins && DB.admins[user] && DB.admins[user].password === pass) {
+
+  // Emergency safety: if DB has no admins, create the default admin right now
+  if (!DB.admins || Object.keys(DB.admins).length === 0) {
+    DB.admins = { "admin": { role: "main", password: "admin", perms: ['all'] } };
+    save(); // persist this so it survives refresh
+  }
+
+  if (DB.admins[user] && DB.admins[user].password === pass) {
     localStorage.setItem('adminSession', user);
     checkAdminSession();
     toast('✅ লগইন সফল হয়েছে!', 'success');
   } else {
-    toast('❌ ইউজারনেম বা পাসওয়ার্ড ভুল হয়েছে!', 'error');
+    // Show what the system currently expects (helpful for debugging)
+    const knownUsers = Object.keys(DB.admins).join(', ');
+    toast('❌ ইউজারনেম বা পাসওয়ার্ড ভুল! (Valid users: ' + knownUsers + ')', 'error');
   }
 }
 

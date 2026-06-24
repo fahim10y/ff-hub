@@ -783,13 +783,13 @@
   <div class="acard" style="width:90%; max-width:350px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); border:1px solid rgba(0,240,255,0.2);">
     <div class="aform-group">
       <label class="aform-label">Username</label>
-      <input type="text" id="loginUser" placeholder="Enter username">
+      <input type="text" id="loginUser" placeholder="Enter username" onkeydown="if(event.key==='Enter') adminLogin()">
     </div>
     <div class="aform-group">
       <label class="aform-label">Password</label>
-      <input type="password" id="loginPass" placeholder="Enter password">
+      <input type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter') adminLogin()">
     </div>
-    <button class="abtn abtn-cyan abtn-full" onclick="adminLogin()">
+    <button class="abtn abtn-cyan abtn-full" onclick="adminLogin()" style="margin-top:8px;">
       <i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard
     </button>
   </div>
