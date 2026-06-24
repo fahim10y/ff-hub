@@ -1411,8 +1411,9 @@ function submitDeposit() {
   const amount = parseInt(v('depAmount'));
   const trx    = v('depTrx').trim();
 
-  if (!amount || amount < 50) { 
-    toast('কমপক্ষে ৳৫০ যোগ করতে হবে!', 'error'); return; 
+  const limits = DB.settings.limits || {minDep: 50, maxDep: 5000, minWit: 100, maxWit: 5000};
+  if (!amount || amount < limits.minDep || amount > limits.maxDep) { 
+    toast(`ডিপোজিটের পরিমাণ ৳${limits.minDep} থেকে ৳${limits.maxDep} এর মধ্যে হতে হবে!`, 'error'); return; 
   }
   if (!trx) { 
     toast('Transaction ID (TrxID) দিতে হবে!', 'error'); return; 
@@ -1450,8 +1451,9 @@ function submitWithdraw() {
   const method = document.getElementById('withMethod').value;
   const acc    = v('withAcc').trim();
 
-  if (!amount || amount < 100) { 
-    toast('উইথড্র করার নূন্যতম পরিমাণ ৳১০০!', 'error'); return; 
+  const limits = DB.settings.limits || {minDep: 50, maxDep: 5000, minWit: 100, maxWit: 5000};
+  if (!amount || amount < limits.minWit || amount > limits.maxWit) { 
+    toast(`উইথড্রর পরিমাণ ৳${limits.minWit} থেকে ৳${limits.maxWit} এর মধ্যে হতে হবে!`, 'error'); return; 
   }
   if (!acc) { 
     toast('পেমেন্ট রিসিভ নম্বর দিতে হবে!', 'error'); return; 

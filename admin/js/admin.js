@@ -341,7 +341,7 @@ function renderUsers() {
     const earn = u.earnBalance || 0;
     
     return `
-      <div class="user-card">
+      <div class="user-card" style="cursor:pointer;" onclick="openUserModal('${u.phone}')">
         <div class="user-avatar"><i class="fa-solid fa-user-astronaut"></i></div>
         <div class="user-info">
           <div class="user-name">${u.name} ${u.supportPin ? `<span class="user-pin-badge">PIN: ${u.supportPin}</span>` : ''}</div>
@@ -384,7 +384,7 @@ function searchUser() {
     const earn = u.earnBalance || 0;
     
     return `
-      <div class="user-card" style="border-color: var(--secondary);">
+      <div class="user-card" style="border-color: var(--secondary); cursor:pointer;" onclick="openUserModal('${u.phone}')">
         <div class="user-avatar"><i class="fa-solid fa-user-astronaut"></i></div>
         <div class="user-info">
           <div class="user-name">${u.name} ${u.supportPin ? `<span class="user-pin-badge">PIN: ${u.supportPin}</span>` : ''}</div>
@@ -401,6 +401,72 @@ function searchUser() {
         </div>
       </div>`;
   }).join('');
+}
+
+
+// ── USER MODAL ACTIONS ───────────────────────────
+let currentModalUserPhone = null;
+
+function openUserModal(phone) {
+  load();
+  const u = DB.users[phone];
+  if (!u) return;
+  currentModalUserPhone = phone;
+  
+  document.getElementById('umInfo').innerHTML = `
+    <strong>নাম:</strong> ${u.name}<br>
+    <strong>মোবাইল:</strong> ${phone}<br>
+    <strong>FF Name:</strong> ${u.ffname} (UID: ${u.uid})<br>
+    <strong style="color:var(--gold)">অবস্থা:</strong> ${u.isBanned ? '<span style="color:red">BANNED</span>' : '<span style="color:var(--green)">ACTIVE</span>'}
+  `;
+  
+  const banBtn = document.getElementById('umBanBtn');
+  if (u.isBanned) {
+    banBtn.innerHTML = '<i class="fa-solid fa-check"></i> ইউজারকে Unban করুন';
+    banBtn.className = 'abtn abtn-green abtn-full';
+  } else {
+    banBtn.innerHTML = '<i class="fa-solid fa-ban"></i> ইউজারকে Ban করুন';
+    banBtn.className = 'abtn abtn-red abtn-full';
+  }
+  
+  document.getElementById('umNewPass').value = '';
+  document.getElementById('userModalOverlay').style.display = 'block';
+  document.getElementById('userActionModal').style.display = 'block';
+}
+
+function closeUserModal() {
+  currentModalUserPhone = null;
+  document.getElementById('userModalOverlay').style.display = 'none';
+  document.getElementById('userActionModal').style.display = 'none';
+}
+
+function saveUserPassword() {
+  if (!currentModalUserPhone) return;
+  const newPass = document.getElementById('umNewPass').value.trim();
+  if (newPass.length < 4) {
+    toast('পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে!', 'error');
+    return;
+  }
+  load();
+  if (DB.users[currentModalUserPhone]) {
+    DB.users[currentModalUserPhone].password = newPass;
+    save();
+    toast('পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!', 'success');
+    closeUserModal();
+  }
+}
+
+function toggleUserBan() {
+  if (!currentModalUserPhone) return;
+  load();
+  if (DB.users[currentModalUserPhone]) {
+    const u = DB.users[currentModalUserPhone];
+    u.isBanned = !u.isBanned;
+    save();
+    toast(u.isBanned ? 'ইউজারকে Ban করা হয়েছে!' : 'ইউজারকে Unban করা হয়েছে!', u.isBanned ? 'error' : 'success');
+    renderUsers();
+    closeUserModal();
+  }
 }
 
 // ── DEPOSITS ────────────────────────────────────
@@ -851,6 +917,17 @@ function loadSettingsToForm() {
   document.getElementById('cfgNagad').value = DB.settings.payNumbers.nagad || '';
   document.getElementById('cfgRocket').value = DB.settings.payNumbers.rocket || '';
   
+  if(!DB.settings.limits) DB.settings.limits = {minDep: 50, maxDep: 5000, minWit: 100, maxWit: 5000};
+  const cfgMinDep = document.getElementById('cfgMinDep');
+  if(cfgMinDep) cfgMinDep.value = DB.settings.limits.minDep;
+  const cfgMaxDep = document.getElementById('cfgMaxDep');
+  if(cfgMaxDep) cfgMaxDep.value = DB.settings.limits.maxDep;
+  const cfgMinWit = document.getElementById('cfgMinWit');
+  if(cfgMinWit) cfgMinWit.value = DB.settings.limits.minWit;
+  const cfgMaxWit = document.getElementById('cfgMaxWit');
+  if(cfgMaxWit) cfgMaxWit.value = DB.settings.limits.maxWit;
+
+  
   // Load background image preview
   const bgPreview = document.getElementById('bgImgPreview');
   const bgPreviewImg = document.getElementById('bgPreviewImg');
@@ -1001,6 +1078,17 @@ function saveSettings() {
   DB.settings.payNumbers.bkash = document.getElementById('cfgBkash').value.trim();
   DB.settings.payNumbers.nagad = document.getElementById('cfgNagad').value.trim();
   DB.settings.payNumbers.rocket = document.getElementById('cfgRocket').value.trim();
+  
+  if(!DB.settings.limits) DB.settings.limits = {};
+  const inMinDep = document.getElementById('cfgMinDep');
+  if(inMinDep) DB.settings.limits.minDep = parseInt(inMinDep.value) || 50;
+  const inMaxDep = document.getElementById('cfgMaxDep');
+  if(inMaxDep) DB.settings.limits.maxDep = parseInt(inMaxDep.value) || 5000;
+  const inMinWit = document.getElementById('cfgMinWit');
+  if(inMinWit) DB.settings.limits.minWit = parseInt(inMinWit.value) || 100;
+  const inMaxWit = document.getElementById('cfgMaxWit');
+  if(inMaxWit) DB.settings.limits.maxWit = parseInt(inMaxWit.value) || 5000;
+
   
   save();
   toast('⚙️ সেটিংস সফলভাবে সেভ করা হয়েছে!', 'success');
