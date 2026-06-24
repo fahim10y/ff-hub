@@ -107,6 +107,8 @@ function toast(msg, type = 'success') {
 // ── TABS ────────────────────────────────────────
 let currentResMode = '';
 let currentNotifyMode = '';
+let currentResMatchId = null;
+let currentNotifyMatchId = null;
 
 function populateMatchSelects() {
   load();
@@ -117,7 +119,7 @@ function populateMatchSelects() {
   const resGrid = document.getElementById('resModeGrid');
   if (resGrid) {
     resGrid.innerHTML = modes.map(m => `
-      <div class="admin-mode-box ${currentResMode === m.tag ? 'active' : ''}" 
+      <div class="admin-mode-box" 
            onclick="selectResMode('${m.tag}')"
            style="background: url('${m.image}') center/cover;">
         <div class="amb-title">${m.name}</div>
@@ -129,76 +131,147 @@ function populateMatchSelects() {
   const notGrid = document.getElementById('notifyModeGrid');
   if (notGrid) {
     notGrid.innerHTML = modes.map(m => `
-      <div class="admin-mode-box ${currentNotifyMode === m.tag ? 'active' : ''}" 
+      <div class="admin-mode-box" 
            onclick="selectNotifyMode('${m.tag}')"
            style="background: url('${m.image}') center/cover;">
         <div class="amb-title">${m.name}</div>
       </div>
     `).join('');
   }
-  
-  loadResultMatchOptions();
-  loadNotifyMatchOptions();
+
+  // Reset to default views when repopulating
+  backToResModes();
+  backToNotifyModes();
 }
 
 function selectResMode(tag) {
   currentResMode = tag;
   const modeName = DB.modes.find(m => m.tag === tag)?.name || 'All Modes';
   const resModeTitle = document.getElementById('resModeTitle');
-  if (resModeTitle) resModeTitle.textContent = modeName + " — ম্যাচ";
+  if (resModeTitle) resModeTitle.textContent = modeName;
   
   document.getElementById('resModeView').style.display = 'none';
-  document.getElementById('resMatchView').style.display = 'block';
+  document.getElementById('resMatchListView').style.display = 'block';
+  document.getElementById('resActionView').style.display = 'none';
   
-  loadResultMatchOptions();
+  loadResultMatchCards();
 }
 
 function backToResModes() {
   document.getElementById('resModeView').style.display = 'block';
-  document.getElementById('resMatchView').style.display = 'none';
+  document.getElementById('resMatchListView').style.display = 'none';
+  document.getElementById('resActionView').style.display = 'none';
+}
+
+function selectResMatch(matchId) {
+  currentResMatchId = parseInt(matchId);
+  const m = DB.matches.find(x => x.id === currentResMatchId);
+  if(!m) return;
+  document.getElementById('resSelectedMatchTitle').textContent = m.name + ' — ৳' + m.perKill + '/kill';
+  
+  document.getElementById('resMatchListView').style.display = 'none';
+  document.getElementById('resActionView').style.display = 'block';
+  
+  // Update internal logic: since we removed the `<select>` but functions might rely on reading `document.getElementById('resTournament').value`, we need to change how `submitResult` gets the tournament ID or just create a hidden input.
+  // We can just rely on `currentResMatchId`. Let's mock a select element or just modify `loadMatchPlayers`.
+  // Wait, let's just make a hidden select or modify `loadMatchPlayers` to use `currentResMatchId`.
+  loadMatchPlayersForAdmin(currentResMatchId);
+}
+
+function backToResMatchList() {
+  document.getElementById('resMatchListView').style.display = 'block';
+  document.getElementById('resActionView').style.display = 'none';
+  // clear result views
+  document.getElementById('matchPlayersList').innerHTML = '<div class="aempty"><i class="fa-solid fa-users"></i><span>ম্যাচ সিলেক্ট করুন</span></div>';
+  document.getElementById('giveResultCard').style.display = 'none';
 }
 
 function selectNotifyMode(tag) {
   currentNotifyMode = tag;
   const modeName = DB.modes.find(m => m.tag === tag)?.name || 'All Modes';
   const notifyModeTitle = document.getElementById('notifyModeTitle');
-  if (notifyModeTitle) notifyModeTitle.textContent = modeName + " — ম্যাচ";
+  if (notifyModeTitle) notifyModeTitle.textContent = modeName;
 
   document.getElementById('notifyModeView').style.display = 'none';
-  document.getElementById('notifyMatchView').style.display = 'block';
+  document.getElementById('notifyMatchListView').style.display = 'block';
+  document.getElementById('notifyActionView').style.display = 'none';
   
-  loadNotifyMatchOptions();
+  loadNotifyMatchCards();
 }
 
 function backToNotifyModes() {
   document.getElementById('notifyModeView').style.display = 'block';
-  document.getElementById('notifyMatchView').style.display = 'none';
+  document.getElementById('notifyMatchListView').style.display = 'none';
+  document.getElementById('notifyActionView').style.display = 'none';
 }
 
-function loadResultMatchOptions() {
+function selectNotifyMatch(matchId) {
+  currentNotifyMatchId = parseInt(matchId);
+  const m = DB.matches.find(x => x.id === currentNotifyMatchId);
+  if(!m) return;
+  document.getElementById('notifySelectedMatchTitle').textContent = m.name;
+  
+  document.getElementById('notifyMatchListView').style.display = 'none';
+  document.getElementById('notifyActionView').style.display = 'block';
+}
+
+function backToNotifyMatchList() {
+  document.getElementById('notifyMatchListView').style.display = 'block';
+  document.getElementById('notifyActionView').style.display = 'none';
+}
+
+// ── MATCH CARDS RENDERERS ──
+function loadResultMatchCards() {
   load();
   const filter = currentResMode;
   const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
   
-  const opts = matches.length
-    ? matches.map(m => `<option value="${m.id}">${m.name} — ৳${m.perKill}/kill</option>`).join('')
-    : '<option value="">কোনো ম্যাচ নেই</option>';
+  const html = matches.length
+    ? matches.map(m => `
+      <div class="user-card" style="cursor:pointer; background:rgba(0,0,0,0.3); margin-bottom:10px;" onclick="selectResMatch(${m.id})">
+        <div class="user-avatar" style="background:linear-gradient(135deg, rgba(255,183,0,0.2), rgba(255,0,85,0.2)); border-color:var(--gold);">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div class="user-info">
+          <div class="user-name">${m.name}</div>
+          <div class="user-sub">🗺 ${m.map} &nbsp;·&nbsp; 🕐 ${m.time}</div>
+          <div class="user-misc" style="color:var(--green); font-weight:bold;">Per Kill: ৳${m.perKill}</div>
+        </div>
+        <div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i>
+        </div>
+      </div>
+    `).join('')
+    : '<div class="aempty"><i class="fa-solid fa-box-open"></i><span>কোনো ম্যাচ নেই</span></div>';
     
-  const resTour = document.getElementById('resTournament');
-  if (resTour) { resTour.innerHTML = opts; loadMatchPlayers(); }
+  const el = document.getElementById('resMatchCardsList');
+  if (el) el.innerHTML = html;
 }
 
-function loadNotifyMatchOptions() {
+function loadNotifyMatchCards() {
   load();
   const filter = currentNotifyMode;
   const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
   
-  const opts = matches.length
-    ? matches.map(m => `<option value="${m.id}">${m.name}</option>`).join('')
-    : '<option value="">কোনো ম্যাচ নেই</option>';
+  const html = matches.length
+    ? matches.map(m => `
+      <div class="user-card" style="cursor:pointer; background:rgba(0,0,0,0.3); margin-bottom:10px;" onclick="selectNotifyMatch(${m.id})">
+        <div class="user-avatar" style="background:linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,255,136,0.2)); border-color:var(--secondary);">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <div class="user-info">
+          <div class="user-name">${m.name}</div>
+          <div class="user-sub">🗺 ${m.map} &nbsp;·&nbsp; 🕐 ${m.time}</div>
+        </div>
+        <div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i>
+        </div>
+      </div>
+    `).join('')
+    : '<div class="aempty"><i class="fa-solid fa-box-open"></i><span>কোনো ম্যাচ নেই</span></div>';
     
-  const notTour = document.getElementById('notifyTournament');
-  if (notTour) notTour.innerHTML = opts;
+  const el = document.getElementById('notifyMatchCardsList');
+  if (el) el.innerHTML = html;
 }
 
 const TAB_TITLES = {
@@ -513,7 +586,7 @@ function lookupPlayer() {
 function calcPrizePreview() {
   const kills     = parseInt(document.getElementById('resKills').value) || 0;
   const placement = parseInt(document.getElementById('resPlacement').value) || 0;
-  const tid       = document.getElementById('resTournament').value;
+  const tid       = currentResMatchId;
   const t = (DB.matches || []).find(x => String(x.id) === String(tid));
   if (!t) return;
 
@@ -538,7 +611,7 @@ function submitResult() {
 
   const kills     = parseInt(document.getElementById('resKills').value) || 0;
   const placement = parseInt(document.getElementById('resPlacement').value) || 0;
-  const tid       = document.getElementById('resTournament').value;
+  const tid       = currentResMatchId;
 
   // Find match from DB.matches
   const t = (DB.matches || []).find(x => String(x.id) === String(tid));
@@ -596,8 +669,7 @@ function submitResult() {
 function sendRoomNotify() {
   const rid  = document.getElementById('roomID').value.trim();
   const pass = document.getElementById('roomPass').value.trim();
-  const sel  = document.getElementById('notifyTournament');
-  const tid  = sel ? sel.value : null;
+  const tid  = currentNotifyMatchId;
 
   if (!rid || !pass) { toast('Room ID ও Password দিন!', 'error'); return; }
   if (!tid) { toast('ম্যাচ সিলেক্ট করুন!', 'error'); return; }
@@ -1062,12 +1134,11 @@ function deleteMatch(id) {
 let foundPlayerPhone = null;
 let selectedResultMatchId = null;
 
-function loadMatchPlayers() {
+function loadMatchPlayersForAdmin(matchId) {
   load();
-  const sel = document.getElementById('resTournament');
-  if (!sel || !sel.value) return;
+  const tid = parseInt(matchId) || matchId;
+  if (!tid) return;
 
-  const tid = parseInt(sel.value) || sel.value;
   selectedResultMatchId = tid;
 
   const players = Object.values(DB.matchPlayers && DB.matchPlayers[tid] ? DB.matchPlayers[tid] : {});

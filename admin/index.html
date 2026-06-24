@@ -276,21 +276,23 @@
           <div id="resModeGrid" class="admin-mode-grid"></div>
         </div>
 
-        <!-- View 2: Match Selection & Results -->
-        <div id="resMatchView" style="display:none;">
+        <!-- View 2: Match List for Selected Mode -->
+        <div id="resMatchListView" style="display:none;">
           <button class="abtn" onclick="backToResModes()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
             <i class="fa-solid fa-arrow-left"></i> মোড পরিবর্তন করুন
           </button>
+          <div class="section-label"><i class="fa-solid fa-trophy"></i> <span id="resModeTitle">ম্যাচ</span> — ম্যাচ সিলেক্ট করুন</div>
+          <div id="resMatchCardsList"></div>
+        </div>
+
+        <!-- View 3: Prize Form for Selected Match -->
+        <div id="resActionView" style="display:none;">
+          <button class="abtn" onclick="backToResMatchList()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
+            <i class="fa-solid fa-arrow-left"></i> অন্য ম্যাচ সিলেক্ট করুন
+          </button>
           
           <div class="acard">
-            <div class="acard-header"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> <span id="resModeTitle">ম্যাচ</span> সিলেক্ট করুন</div>
-            <div class="aform-group">
-              <label class="aform-label">ম্যাচ বেছে নিন</label>
-              <div class="aselect-wrap">
-                <select id="resTournament" onchange="loadMatchPlayers()"></select>
-              </div>
-            </div>
-          </div>
+            <div class="acard-header"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> <span id="resSelectedMatchTitle">ম্যাচ</span></div>
 
         <!-- Step 2: Players list for that match -->
         <div class="section-label"><i class="fa-solid fa-users"></i> জয়েন করা প্লেয়ার তালিকা</div>
@@ -332,7 +334,7 @@
 
         <div class="section-label" style="margin-top:12px;"><i class="fa-solid fa-clock-rotate-left"></i> সাম্প্রতিক পুরস্কার ইতিহাস</div>
         <div id="resultHistory"><div class="aempty"><i class="fa-solid fa-inbox"></i><span>কোনো ইতিহাস নেই</span></div></div>
-        </div> <!-- End of resMatchView -->
+        </div> <!-- End of resActionView -->
       </div>
 
       <!-- ══ TAB: NOTIFY ══ -->
@@ -344,20 +346,23 @@
           <div id="notifyModeGrid" class="admin-mode-grid"></div>
         </div>
 
-        <!-- View 2: Room Code Form -->
-        <div id="notifyMatchView" style="display:none;">
+        <!-- View 2: Match List for Selected Mode -->
+        <div id="notifyMatchListView" style="display:none;">
           <button class="abtn" onclick="backToNotifyModes()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
             <i class="fa-solid fa-arrow-left"></i> মোড পরিবর্তন করুন
           </button>
+          <div class="section-label"><i class="fa-solid fa-key"></i> <span id="notifyModeTitle">ম্যাচ</span> — ম্যাচ সিলেক্ট করুন</div>
+          <div id="notifyMatchCardsList"></div>
+        </div>
+
+        <!-- View 3: Room Code Form for Selected Match -->
+        <div id="notifyActionView" style="display:none;">
+          <button class="abtn" onclick="backToNotifyMatchList()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
+            <i class="fa-solid fa-arrow-left"></i> অন্য ম্যাচ সিলেক্ট করুন
+          </button>
           
           <div class="acard">
-            <div class="acard-header"><i class="fa-solid fa-key" style="color:var(--secondary)"></i> <span id="notifyModeTitle">ম্যাচ</span> এর রুম আইডি পাবলিশ করুন</div>
-            <div class="aform-group">
-              <label class="aform-label">ম্যাচ বেছে নিন</label>
-              <div class="aselect-wrap">
-                <select id="notifyTournament"></select>
-              </div>
-            </div>
+            <div class="acard-header"><i class="fa-solid fa-key" style="color:var(--secondary)"></i> <span id="notifySelectedMatchTitle">ম্যাচ</span> — রুম আইডি ও পাসওয়ার্ড</div>
           <div class="aform-row">
             <div class="aform-group">
               <label class="aform-label">Match Room ID</label>
@@ -372,7 +377,7 @@
             <i class="fa-solid fa-bell"></i> Room Code পাবলিশ করুন
           </button>
         </div>
-        </div> <!-- End of notifyMatchView -->
+        </div> <!-- End of notifyActionView -->
 
         <!-- Manual Balance -->
         <div class="acard" style="margin-top:16px;">
