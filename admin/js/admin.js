@@ -105,26 +105,57 @@ function toast(msg, type = 'success') {
 }
 
 // ── TABS ────────────────────────────────────────
+let currentResMode = '';
+let currentNotifyMode = '';
+
 function populateMatchSelects() {
   load();
   
-  // Populate mode filters
   const modes = (DB.modes || []).filter(m => m.tag !== 'all');
-  const modeOpts = '<option value="">All Modes (সব মোড)</option>' + 
-    modes.map(m => `<option value="${m.tag}">${m.name}</option>`).join('');
   
-  const resMode = document.getElementById('resModeFilter');
-  const notMode = document.getElementById('notifyModeFilter');
-  if (resMode) resMode.innerHTML = modeOpts;
-  if (notMode) notMode.innerHTML = modeOpts;
+  // Render grid for Results Tab
+  const resGrid = document.getElementById('resModeGrid');
+  if (resGrid) {
+    resGrid.innerHTML = modes.map(m => `
+      <div class="admin-mode-box ${currentResMode === m.tag ? 'active' : ''}" 
+           onclick="selectResMode('${m.tag}')"
+           style="background: url('${m.image}') center/cover;">
+        <div class="amb-title">${m.name}</div>
+      </div>
+    `).join('');
+  }
+  
+  // Render grid for Notify Tab
+  const notGrid = document.getElementById('notifyModeGrid');
+  if (notGrid) {
+    notGrid.innerHTML = modes.map(m => `
+      <div class="admin-mode-box ${currentNotifyMode === m.tag ? 'active' : ''}" 
+           onclick="selectNotifyMode('${m.tag}')"
+           style="background: url('${m.image}') center/cover;">
+        <div class="amb-title">${m.name}</div>
+      </div>
+    `).join('');
+  }
   
   loadResultMatchOptions();
   loadNotifyMatchOptions();
 }
 
+function selectResMode(tag) {
+  // Toggle selection
+  currentResMode = (currentResMode === tag) ? '' : tag;
+  populateMatchSelects();
+}
+
+function selectNotifyMode(tag) {
+  // Toggle selection
+  currentNotifyMode = (currentNotifyMode === tag) ? '' : tag;
+  populateMatchSelects();
+}
+
 function loadResultMatchOptions() {
   load();
-  const filter = document.getElementById('resModeFilter')?.value || '';
+  const filter = currentResMode;
   const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
   
   const opts = matches.length
@@ -137,7 +168,7 @@ function loadResultMatchOptions() {
 
 function loadNotifyMatchOptions() {
   load();
-  const filter = document.getElementById('notifyModeFilter')?.value || '';
+  const filter = currentNotifyMode;
   const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
   
   const opts = matches.length
