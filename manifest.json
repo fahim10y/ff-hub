@@ -1,0 +1,16 @@
+{
+  "name": "FF Tournament BD",
+  "short_name": "FF Tournament",
+  "description": "Bangladesh Free Fire Tournament Platform",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#ff4500",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["games", "sports"],
+  "lang": "bn"
+}

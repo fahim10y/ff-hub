@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FF HUB — E-Sports Platform 🔥</title>
+  <meta name="description" content="Bangladesh Free Fire Tournament Platform — Join, Play, Win!">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff0055">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div id="app" class="futuristic-layout">
+
+  <!-- ── SIDEBAR DRAWER (LEFT PANEL) ── -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fa-solid fa-fire-flame-curved"></i> FF <span>HUB</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()">&times;</button>
+    </div>
+    
+    <div class="sidebar-profile" id="sidebarProfile" style="display:none;">
+      <div class="sidebar-avatar"><i class="fa-solid fa-user-ninja"></i></div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-username" id="sbName">—</div>
+        <div class="sidebar-email" id="sbEmail">—</div>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a href="#" id="menu-home" onclick="goMenu('Home', this)" class="active">
+        <i class="fa-solid fa-gamepad"></i> Home
+      </a>
+      <a href="#" id="menu-live" onclick="goMenu('Live', this)">
+        <i class="fa-solid fa-tv live-glowing-icon"></i> Watch Live <span class="badge-live-pulse"></span>
+      </a>
+      <a href="#" id="menu-account" onclick="goMenu('Account', this)">
+        <i class="fa-solid fa-circle-user"></i> My Account
+      </a>
+      <a href="#" id="menu-mymatch" onclick="goMenu('MyMatch', this)">
+        <i class="fa-solid fa-trophy"></i> My Match
+      </a>
+      <a href="#" id="menu-addmoney" onclick="goMenu('AddMoney', this)">
+        <i class="fa-solid fa-wallet"></i> Add Money
+      </a>
+      <a href="#" id="menu-withdraw" onclick="goMenu('Withdraw', this)">
+        <i class="fa-solid fa-money-bill-transfer"></i> Withdraw Money
+      </a>
+      <a href="#" id="menu-withdrawlist" onclick="goMenu('WithdrawList', this)">
+        <i class="fa-solid fa-receipt"></i> Withdraw List
+      </a>
+      <a href="#" id="menu-refer" onclick="goMenu('Refer', this)">
+        <i class="fa-solid fa-user-plus"></i> Refer & Earn
+      </a>
+      <a href="#" id="menu-support" onclick="goMenu('Support', this)">
+        <i class="fa-solid fa-headset"></i> Support
+      </a>
+      <a href="#" onclick="doLogout()">
+        <i class="fa-solid fa-right-from-bracket" style="color: var(--primary);"></i> Logout
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Sidebar Overlay for mobile -->
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- ── MAIN CONTENT AREA ── -->
+  <div class="content-wrapper">
+    
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar">
+      <div class="nav-left">
+        <button class="hamburger-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></button>
+        <div class="logo">
+          <i class="fa-solid fa-fire-flame-curved"></i> FF <span>HUB</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <a href="#" onclick="goMenu('Live')" class="live-btn-header">
+          <span class="live-dot"></span> LIVE MATCH
+        </a>
+        <div class="wallet-badge" onclick="goMenu('AddMoney')" id="walletBtn" style="display:none;">
+          <i class="fa-solid fa-coins"></i>
+          <span id="walletDisplay">৳ 0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <main>
+
+      <!-- ── AUTH SECTION ── -->
+      <section id="secAuth" class="active">
+        <div class="profile-hero" style="margin-top:10px; border-color: var(--primary);">
+          <div class="profile-avatar-big" style="background: linear-gradient(135deg, var(--primary) 0%, #ff6a00 100%); width:70px; height:70px; font-size:1.8rem;">
+            <i class="fa-solid fa-crosshairs"></i>
+          </div>
+          <h1 style="font-size: 1.8rem; font-weight:700; color: var(--text); letter-spacing: 1px;">FF HUB E-SPORTS</h1>
+          <p style="color: var(--muted); margin-top: 4px; font-size:0.9rem;">Join. Battle. Earn Rewards.</p>
+        </div>
+        
+        <div class="card" style="position:relative; z-index:10; background: rgba(13, 14, 33, 0.85); backdrop-filter: blur(20px); padding: 0; overflow: hidden;">
+          <!-- AUTH TABS -->
+          <div style="display:flex; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3);">
+            <button id="tabLogin" class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1; padding:16px; background:none; border:none; color:var(--secondary); border-bottom: 2px solid var(--secondary); font-weight:800; font-family:var(--font); font-size:1.1rem; cursor:pointer;">লগইন</button>
+            <button id="tabReg" class="auth-tab" onclick="switchAuthTab('register')" style="flex:1; padding:16px; background:none; border:none; color:var(--muted); border-bottom: 2px solid transparent; font-weight:800; font-family:var(--font); font-size:1.1rem; cursor:pointer;">রেজিস্ট্রেশন</button>
+          </div>
+
+          <!-- LOGIN FORM -->
+          <div id="formLogin" style="padding: 20px;">
+            <div class="form-sub" style="margin-bottom:20px;">আপনার মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন</div>
+            <div class="input-group">
+              <span class="input-label">মোবাইল নম্বর</span>
+              <div class="input-wrapper">
+                <input type="tel" id="loginPhone" placeholder="📱 যেমন: 017XXXXXXXX">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+            </div>
+            <div class="input-group">
+              <span class="input-label">পাসওয়ার্ড</span>
+              <div class="input-wrapper">
+                <input type="password" id="loginPass" placeholder="🔑 আপনার পাসওয়ার্ড">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+            </div>
+            <button class="btn btn-fire" onclick="doLogin()">
+              <i class="fa-solid fa-right-to-bracket"></i> লগইন করুন
+            </button>
+          </div>
+
+          <!-- REGISTRATION FORM -->
+          <div id="formReg" style="display:none; padding: 20px;">
+            <div class="form-sub" style="margin-bottom:20px;">নতুন হলে সঠিক তথ্য দিয়ে একাউন্ট তৈরি করুন</div>
+            <div class="input-group">
+              <span class="input-label">আপনার নাম</span>
+              <div class="input-wrapper">
+                <input type="text" id="regName" placeholder="👤 যেমন: Azizul Islam">
+                <i class="fa-solid fa-signature"></i>
+              </div>
+            </div>
+            <div class="input-group">
+              <span class="input-label">মোবাইল নম্বর</span>
+              <div class="input-wrapper">
+                <input type="tel" id="regPhone" placeholder="📱 যেমন: 017XXXXXXXX">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+            </div>
+            <div class="input-group">
+              <span class="input-label">Free Fire UID</span>
+              <div class="input-wrapper">
+                <input type="text" id="regFFUid" placeholder="🎮 যেমন: 1234567890">
+                <i class="fa-solid fa-id-card"></i>
+              </div>
+            </div>
+            <div class="input-group">
+              <span class="input-label">Free Fire ইন-গেম নাম</span>
+              <div class="input-wrapper">
+                <input type="text" id="regFFName" placeholder="⚔️ যেমন: HHH_Fahim">
+                <i class="fa-solid fa-gamepad"></i>
+              </div>
+            </div>
+            <div class="input-group">
+              <span class="input-label">নতুন পাসওয়ার্ড</span>
+              <div class="input-wrapper">
+                <input type="password" id="regPass" placeholder="🔑 কমপক্ষে ৪ সংখ্যার পাসওয়ার্ড">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+            </div>
+            <button class="btn btn-cyan" onclick="doRegister()">
+              <i class="fa-solid fa-user-plus"></i> একাউন্ট তৈরি করুন
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── HOME SECTION ── -->
+      <section id="secHome">
+        
+        <!-- ── HERO BANNERS (Auto-Slide Carousel) ── -->
+        <div id="heroSlider" style="margin-bottom: 24px;">
+        </div>
+
+        <div class="sec-title">
+          <i class="fa-solid fa-gamepad"></i> গেম মোড বেছে নিন
+        </div>
+        
+        <!-- ── MODE GRID (Dynamically rendered from DB.modes) ── -->
+        <div id="modeGrid" class="mode-grid"></div>
+      </section>
+
+      <!-- ── MATCH LIST SECTION ── -->
+      <section id="secMatchList">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button onclick="goMenu('Home')" style="background: rgba(255,255,255,0.1); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div style="font-size: 1.2rem; font-weight: 800; text-transform: uppercase;" id="matchListTitle">Free Fire Matches</div>
+          </div>
+          <button style="background: transparent; color: var(--secondary); border: none; font-size: 1.4rem; cursor: pointer;">
+            <i class="fa-solid fa-circle-play"></i>
+          </button>
+        </div>
+
+        <div style="display: flex; margin-bottom: 16px;">
+          <button id="mlTabOngoing" class="filter-tab active" style="flex:1; border-radius:0; border-bottom: 3px solid var(--secondary); background:transparent; font-weight:800; font-size:0.9rem;" onclick="filterListTab('ongoing')">ONGOING</button>
+          <button id="mlTabResults" class="filter-tab" style="flex:1; border-radius:0; border-bottom: 3px solid transparent; background:transparent; font-weight:800; color:var(--muted); font-size:0.9rem;" onclick="filterListTab('results')">RESULTS</button>
+        </div>
+
+        <div id="tournamentList">
+          <!-- Rendered dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- ── WATCH LIVE MATCH SECTION ── -->
+      <section id="secLive">
+        <div class="live-stream-chat-layout">
+          <!-- Live Stream -->
+          <div>
+            <div class="card card-glowing" style="margin-bottom:0;">
+              <div class="form-title" style="margin-bottom:12px;">🎥 big match live streaming</div>
+              <div id="liveStreamContainer" class="live-stream-container"></div>
+              <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span class="status-badge approved" style="margin-top:0; font-size:0.75rem;">
+                  <span class="live-dot" style="display:inline-block; margin-right:4px;"></span> Active Stream
+                </span>
+                <div style="font-size:0.85rem; color:var(--muted);" id="liveMatchTitle">Free Fire Grand Finals Live</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Chat -->
+          <div class="live-chat-card">
+            <div class="live-chat-header">
+              <i class="fa-solid fa-comments"></i> 💬 Arena Live Chat (ম্যাচ আলোচনা)
+            </div>
+            <div class="live-chat-messages" id="liveChatMessages">
+              <div class="chat-msg"><span class="chat-author mod">System Bot:</span> স্বাগতম! এখানে লাইভ ম্যাচের মন্তব্য করুন।</div>
+            </div>
+            <div class="live-chat-input-bar">
+              <input type="text" id="chatInput" placeholder="চ্যাট লিখুন..." class="no-icon" onkeydown="if(event.key === 'Enter') sendChat()">
+              <button onclick="sendChat()">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Android & Telegram Links -->
+        <div class="esport-promo-grid">
+          <a href="https://play.google.com" target="_blank" class="esport-promo-btn playstore">
+            <i class="fa-brands fa-google-play"></i>
+            <strong>Google Play App</strong>
+            <span>Download Mobile App</span>
+          </a>
+          <a href="https://t.me/yourtelegram" target="_blank" class="esport-promo-btn telegram">
+            <i class="fa-brands fa-telegram"></i>
+            <strong>Join Telegram</strong>
+            <span>Giveaways & Offers</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ── MY ACCOUNT (PROFILE) SECTION ── -->
+      <section id="secAccount">
+        <div class="profile-hero">
+          <div class="verified-badge">
+            <i class="fa-solid fa-circle-check"></i> Verified Account
+          </div>
+          <div class="profile-avatar-big">
+            <i class="fa-solid fa-user-ninja"></i>
+          </div>
+          <h2 class="profile-name" id="pName"> Azizul Islam Fahim</h2>
+          <div class="profile-ffname" id="pFFName" style="font-size: 1rem; font-weight:600; margin-top:2px;">FF Name: HHH Esports</div>
+          <div class="profile-uid" id="pUid" style="font-size: 0.9rem; font-weight:500;">UID: 325318992</div>
+          <div class="profile-joined-date" id="pJoinedDate">Joined: 28 January, 2026 at 10:06 AM</div>
+        </div>
+
+        <!-- Balances Grid -->
+        <div class="stats-grid">
+          <div class="stat-box cyan">
+            <h3>💰 Current Balance</h3>
+            <p id="p2Wallet">৳ 0</p>
+          </div>
+          <div class="stat-box green">
+            <h3>🏅 Earn Balance</h3>
+            <p id="p2Prize">৳ 0</p>
+          </div>
+          <div class="stat-box secondary">
+            <h3>🔑 Support PIN</h3>
+            <p id="p2SupportPin" style="font-size: 1.4rem; letter-spacing: 1px;">------</p>
+          </div>
+          <div class="stat-box secondary" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <h3>💀 Total Kills</h3>
+            <p id="p2Kills" style="font-size: 1.5rem;">0</p>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="sec-title" style="margin:0;"><i class="fa-solid fa-receipt"></i> সাম্প্রতিক লেনদেন সমূহ</div>
+          <button class="btn btn-cyan btn-sm" onclick="goMenu('AddMoney')" style="padding:6px 12px; font-size:0.75rem;">Add Money</button>
+        </div>
+
+        <!-- Transactions History Container -->
+        <div class="card" style="padding: 10px;">
+          <div class="table-responsive">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th>তারিখ</th>
+                  <th>বিবরণ/ট্যাগ</th>
+                  <th>পরিমাণ</th>
+                  <th>অবস্থা</th>
+                </tr>
+              </thead>
+              <tbody id="historyList">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div class="table-pagination">
+            <button class="pag-btn" id="btnPrevPage" onclick="prevPage()">Previous</button>
+            <span id="pageIndicator">Page 1 of 1</span>
+            <button class="pag-btn" id="btnNextPage" onclick="nextPage()">Next</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── MY MATCHES SECTION ── -->
+      <section id="secMyMatch">
+        <div class="sec-title">
+          <i class="fa-solid fa-gamepad"></i> আমার অংশগ্রহণকৃত টুর্নামেন্ট
+        </div>
+        <div id="myMatchesList">
+          <!-- Filled by JS -->
+        </div>
+      </section>
+
+      <!-- ── ADD MONEY (DEPOSIT) SECTION ── -->
+      <section id="secAddMoney">
+        <div class="card card-glowing">
+          <div class="form-title">💰 Add Wallet Money</div>
+          <div class="form-sub">নিচের যেকোনো পেমেন্ট অপশন ব্যবহার করে ডিপোজিট করুন</div>
+
+          <div class="pay-grid">
+            <button class="pay-btn bkash selected" onclick="selectPayMethod('bkash', this)">💗 bKash</button>
+            <button class="pay-btn nagad" onclick="selectPayMethod('nagad', this)">🔶 Nagad</button>
+            <button class="pay-btn rocket" onclick="selectPayMethod('rocket', this)">🚀 Rocket</button>
+          </div>
+
+          <div class="pay-number-card">
+            <div>
+              <div class="pay-num-lbl" id="payLabel">bKash Personal:</div>
+              <div class="pay-num-val" id="payNumber">01712-345678</div>
+            </div>
+            <button class="copy-btn" onclick="copyNumber()">Copy Number</button>
+          </div>
+
+          <div class="input-group">
+            <span class="input-label">টাকার পরিমাণ (৳)</span>
+            <div class="input-wrapper">
+              <input type="number" id="depAmount" placeholder="যেমন: ১০০ (নূন্যতম ৫০ টাকা)" min="50">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <span class="input-label">Transaction ID (TrxID)</span>
+            <div class="input-wrapper">
+              <input type="text" id="depTrx" placeholder="পেমেন্ট স্লিপের TrxID টি দিন">
+              <i class="fa-solid fa-key"></i>
+            </div>
+          </div>
+
+          <button class="btn btn-green" onclick="submitDeposit()">
+            <i class="fa-solid fa-paper-plane"></i> পেমেন্ট রিকোয়েস্ট পাঠান
+          </button>
+        </div>
+
+        <!-- Video Tutorial Card -->
+        <div class="tutorial-video-card">
+          <div class="tutorial-header">
+            <i class="fa-brands fa-youtube" style="color:red; margin-right:6px;"></i> Tutorial: টাকা কিভাবে অ্যাড করবেন?
+          </div>
+          <div id="tutorialVideoContainer" class="tutorial-video-container">
+            <!-- Embed dynamically from settings -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ── WITHDRAW SECTION ── -->
+      <section id="secWithdraw">
+        <!-- Withdraw Request Card -->
+        <div class="card card-glowing">
+          <div class="form-title">💸 Winnings Withdrawal</div>
+          <div class="form-sub">আপনার উইনিং ব্যালেন্স bKash, Nagad বা Rocket এ সরাসরি ক্যাশআউট করুন</div>
+
+          <div class="pay-number-card" style="margin-bottom:16px;">
+            <div>
+              <div class="pay-num-lbl">উইথড্র করার যোগ্য ব্যালেন্স</div>
+              <div class="pay-num-val" style="color:var(--gold);" id="withBalDisplay">৳ 0</div>
+            </div>
+            <div style="font-size:0.8rem; color:var(--primary); font-weight:700;">মিনিমাম উইথড্র: ৳১০০</div>
+          </div>
+
+          <div class="input-group">
+            <span class="input-label">উইথড্র করার পরিমাণ (৳)</span>
+            <div class="input-wrapper">
+              <input type="number" id="withAmt" placeholder="১০০ বা তার বেশি দিন" min="100">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <span class="input-label">পেমেন্ট মেথড সিলেক্ট করুন</span>
+            <div class="select-wrapper">
+              <select id="withMethod" class="no-icon">
+                <option value="bkash">💗 bKash (Personal)</option>
+                <option value="nagad">🔶 Nagad (Personal)</option>
+                <option value="rocket">🚀 Rocket (Personal)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <span class="input-label">আপনার পেমেন্ট নম্বর</span>
+            <div class="input-wrapper">
+              <input type="text" id="withAcc" placeholder="আপনার ০১১XXXXXXXX নম্বরটি দিন">
+              <i class="fa-solid fa-phone"></i>
+            </div>
+          </div>
+
+          <button class="btn btn-fire" onclick="submitWithdraw()">
+            <i class="fa-solid fa-paper-plane"></i> উইথড্র রিকোয়েস্ট পাঠান
+          </button>
+        </div>
+
+        <!-- Transfer Winnings to Wallet Balance Card -->
+        <div class="card">
+          <div class="form-title" style="font-size: 1.15rem; color: var(--secondary);">🔄 Transfer To Wallet Money</div>
+          <div class="form-sub" style="margin-bottom:14px;">উইনিং ব্যালেন্সটি ডিপোজিট ব্যালেন্সে রূপান্তর করে গেম খেলুন (ফি ০%)</div>
+          
+          <div class="pay-number-card" style="margin-bottom:16px; padding:10px 14px;">
+            <div>
+              <div class="pay-num-lbl" style="font-size:0.8rem;">হস্তান্তরযোগ্য ব্যালেন্স</div>
+              <div class="pay-num-val" style="color:var(--secondary); font-size:1rem;" id="transBalDisplay">৳ 0</div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <span class="input-label">রূপান্তরের পরিমাণ (৳)</span>
+            <div class="input-wrapper">
+              <input type="number" id="transAmt" placeholder="৳ পরিমাণ লিখুন" min="10">
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            </div>
+          </div>
+
+          <button class="btn btn-cyan" onclick="submitTransfer()">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i> ট্রান্সফার করুন
+          </button>
+        </div>
+      </section>
+
+      <!-- ── WITHDRAW LIST SECTION ── -->
+      <section id="secWithdrawList">
+        <div class="sec-title">
+          <i class="fa-solid fa-receipt"></i> উইথড্র রিকোয়েস্ট হিস্ট্রি
+        </div>
+        <div class="card" id="withdrawRequestsList">
+          <div class="empty"><i class="fa-solid fa-receipt"></i> কোন উইথড্র ইতিহাস নেই</div>
+        </div>
+      </section>
+
+      <!-- ── REFER & EARN SECTION ── -->
+      <section id="secRefer">
+        <div class="card card-glowing" style="text-align: center;">
+          <div class="profile-avatar-big" style="background: linear-gradient(135deg, var(--secondary) 0%, var(--blue) 100%); width:65px; height:65px; font-size:1.6rem; margin-bottom:12px;">
+            <i class="fa-solid fa-gift"></i>
+          </div>
+          <div class="form-title">Refer & Earn Program</div>
+          <div class="form-sub">বন্ধুদের রেফার করুন এবং প্রতিটি ডিপোজিটে ৫% বোনাস উপার্জন করুন!</div>
+
+          <div class="refer-box">
+            <div class="refer-code-lbl">আপনার ইউনিক রেফারেল কোড</div>
+            <div class="refer-code-val" id="myReferCode">FFHUB-XXXX</div>
+            <button class="copy-btn" onclick="copyReferCode()">Copy Code</button>
+          </div>
+
+          <div style="font-size:0.85rem; color:var(--muted); line-height:1.6; text-align:left; border-top:1px solid var(--border); padding-top:14px;">
+            <strong>কিভাবে কাজ করে?</strong><br>
+            ১. আপনার কোডটি বন্ধুদের সাথে শেয়ার করুন।<br>
+            ২. রেজিস্ট্রেশনের সময় তারা আপনার কোড ব্যবহার করবে।<br>
+            ৩. তারা যখনই টাকা অ্যাড করবে, আপনি সাথে সাথে পাবেন ৫% ক্যাশব্যাক!
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SUPPORT SECTION ── -->
+      <section id="secSupport">
+        <div class="card">
+          <div class="form-title" style="text-align:left;"><i class="fa-solid fa-headset" style="color:var(--secondary);"></i> কাস্টমার সাপোর্ট এবং হেল্প</div>
+          <div class="form-sub" style="text-align:left;">আমাদের সাথে যেকোনো প্রয়োজনে যোগাযোগ করুন। আমরা ২৪ ঘণ্টার মধ্যে উত্তর দেব।</div>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <a href="https://t.me/yourtelegram" target="_blank" class="esport-promo-btn telegram" style="flex-direction:row; justify-content:flex-start; gap:16px;">
+              <i class="fa-brands fa-telegram" style="font-size:2rem;"></i>
+              <div style="text-align:left;">
+                <strong style="display:block;">Telegram Channel</strong>
+                <span style="font-size:0.75rem;">চ্যানেল জয়েন করে আপডেট থাকুন</span>
+              </div>
+            </a>
+            
+            <a href="https://wa.me/8801700000000" target="_blank" class="esport-promo-btn playstore" style="flex-direction:row; justify-content:flex-start; gap:16px; border-color: rgba(0, 255, 136, 0.2);">
+              <i class="fa-brands fa-whatsapp" style="font-size:2rem; color: #25d366;"></i>
+              <div style="text-align:left;">
+                <strong style="display:block; color: #fff;">WhatsApp Support</strong>
+                <span style="font-size:0.75rem; color: var(--muted);">পেমেন্ট বা জয়েনিং সমস্যায় চ্যাট করুন</span>
+              </div>
+            </a>
+          </div>
+
+          <div style="margin-top:20px; padding:15px; background:rgba(0, 240, 255, 0.03); border:1px solid var(--border); border-radius:10px;">
+            <div style="font-weight:700; color:var(--text); font-size:0.9rem; margin-bottom:6px;">⚠️ গুরুত্বপূর্ণ নিয়মাবলী:</div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.6;">
+              - উইথড্র করার পর টাকা ১-১২ ঘণ্টার মধ্যে আপনার অ্যাকাউন্টে পাঠিয়ে দেওয়া হবে।<br>
+              - রুম কোড ম্যাচের নির্ধারিত সময়ের ১০ মিনিট পূর্বে নোটিফিকেশনে দেওয়া হবে।<br>
+              - হ্যাকিং বা গেমের নিয়ম ভঙ্গ করলে আইডি ব্লক এবং ব্যালেন্স বাজেয়াপ্ত হবে।
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM NAV (VISIBLE ON MOBILE ONLY) -->
+    <nav class="bottom-nav" id="bottomNav" style="display:none;">
+      <a href="#" id="nav-home" onclick="goMenu('Home', this)" class="active">
+        <i class="fa-solid fa-gamepad"></i>Home
+      </a>
+      <a href="#" id="nav-live" onclick="goMenu('Live', this)">
+        <i class="fa-solid fa-tv"></i>Live Stream
+      </a>
+      <a href="#" id="nav-mymatch" onclick="goMenu('MyMatch', this)">
+        <i class="fa-solid fa-clock-rotate-left"></i>My Match
+      </a>
+      <a href="#" id="nav-account" onclick="goMenu('Account', this)">
+        <i class="fa-solid fa-user"></i>Account
+      </a>
+    </nav>
+
+  </div><!-- .content-wrapper -->
+
+</div><!-- #app -->
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- JOIN CONFIRM MODAL -->
+<div class="modal" id="joinModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title"><i class="fa-solid fa-gamepad" style="color:var(--secondary)"></i> টুর্নামেন্ট Join নিশ্চিতকরণ</div>
+      <button class="modal-close" onclick="closeModal('joinModal')">✕</button>
+    </div>
+    <div class="card" id="joinInfo" style="margin-bottom:16px; background:rgba(10, 11, 24, 0.7); border-color: rgba(255,255,255,0.05);">
+      <!-- Filled by JS -->
+    </div>
+    <button class="btn btn-cyan" onclick="confirmJoin()">
+      <i class="fa-solid fa-circle-check"></i> নিশ্চিত করুন ও প্রবেশ করুন
+    </button>
+  </div>
+</div>
+
+<!-- MATCH DETAIL MODAL (Rules + Players) -->
+<div id="matchDetailModal" onclick="closeMatchDetail(event)">
+  <div class="match-detail-sheet" onclick="event.stopPropagation()">
+    <div class="mds-header">
+      <div class="mds-handle"></div>
+      <div class="mds-title" id="mdsTitle">Match Rules</div>
+      <div class="mds-meta" id="mdsMeta"></div>
+      <button class="mds-close" onclick="closeMatchDetail()">✕</button>
+    </div>
+
+    <div class="mds-tabs">
+      <button class="mds-tab active" id="mdsTabRules" onclick="switchMdsTab('rules')">📋 ম্যাচ নিয়ম</button>
+      <button class="mds-tab" id="mdsTabPlayers" onclick="switchMdsTab('players')">👥 অংশগ্রহণকারী</button>
+    </div>
+
+    <div class="mds-body">
+      <!-- RULES TAB -->
+      <div class="mds-pane active" id="mdsPaneRules">
+        <div id="mdsRulesContent"></div>
+      </div>
+
+      <!-- PLAYERS TAB -->
+      <div class="mds-pane" id="mdsPanePlayers">
+        <div id="mdsPlayersContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- JS -->
+<script src="js/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control — FF HUB E-Sports</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+<!-- SCAN LINE OVERLAY -->
+<div class="admin-scanlines"></div>
+
+<!-- CORNER DECORATIONS -->
+<div class="corner-deco top-left"></div>
+<div class="corner-deco top-right"></div>
+<div class="corner-deco bottom-left"></div>
+<div class="corner-deco bottom-right"></div>
+
+<!-- ADMIN LAYOUT -->
+<div class="admin-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-logo-area">
+      <div class="admin-logo-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <div class="admin-logo-text">FF HUB</div>
+        <div class="admin-logo-sub">ADMIN CONTROL</div>
+      </div>
+    </div>
+
+    <!-- STATS PANEL -->
+    <div class="sidebar-stats">
+      <div class="ss-item">
+        <div class="ss-val" id="sbStatUsers">0</div>
+        <div class="ss-lbl">Total Users</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-val pending" id="sbStatPending">0</div>
+        <div class="ss-lbl">Pending</div>
+      </div>
+    </div>
+
+    <!-- NAV MENU -->
+    <nav class="admin-nav">
+      <a href="#" class="anav-item active" onclick="aTab('users',this)" id="nav-users">
+        <span class="anav-icon"><i class="fa-solid fa-users"></i></span>
+        <span class="anav-label">Users</span>
+        <span class="anav-badge" id="badge-users"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('deposits',this)" id="nav-deposits">
+        <span class="anav-icon"><i class="fa-solid fa-arrow-down-to-line"></i></span>
+        <span class="anav-label">Deposits</span>
+        <span class="anav-badge pending" id="badge-deposits"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('withdrawals',this)" id="nav-withdrawals">
+        <span class="anav-icon"><i class="fa-solid fa-money-bill-transfer"></i></span>
+        <span class="anav-label">Withdrawals</span>
+        <span class="anav-badge danger" id="badge-withdrawals"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('matches',this)" id="nav-matches">
+        <span class="anav-icon"><i class="fa-solid fa-gamepad"></i></span>
+        <span class="anav-label">Matches</span>
+        <span class="anav-badge" id="badge-matches"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('results',this)" id="nav-results">
+        <span class="anav-icon"><i class="fa-solid fa-trophy"></i></span>
+        <span class="anav-label">Match Results</span>
+        <span class="anav-badge"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('notify',this)" id="nav-notify">
+        <span class="anav-icon"><i class="fa-solid fa-bell"></i></span>
+        <span class="anav-label">Room Codes</span>
+        <span class="anav-badge"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('modes',this)" id="nav-modes">
+        <span class="anav-icon"><i class="fa-solid fa-layer-group"></i></span>
+        <span class="anav-label">Game Modes</span>
+        <span class="anav-badge" id="badge-modes"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('settings',this)" id="nav-settings">
+        <span class="anav-icon"><i class="fa-solid fa-sliders"></i></span>
+        <span class="anav-label">Settings</span>
+        <span class="anav-badge"></span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="../index.html" class="goto-app-btn">
+        <i class="fa-solid fa-mobile-screen-button"></i> User App
+        <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:0.7rem;"></i>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="admin-main">
+
+    <!-- TOP BAR -->
+    <header class="admin-topbar">
+      <button class="sidebar-toggle-btn" onclick="toggleAdminSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="topbar-title" id="topbarTitle">
+        <i class="fa-solid fa-users"></i> Users Management
+      </div>
+      <div class="topbar-right">
+        <div class="admin-live-badge">
+          <span class="pulse-dot"></span> LIVE SYSTEM
+        </div>
+        <div class="topbar-time" id="adminTime"></div>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <div class="admin-content">
+
+      <!-- ══ TAB: USERS ══ -->
+      <div id="tab-users" class="atab-pane active">
+        <!-- Search Box -->
+        <div class="acard search-card">
+          <div class="acard-header">
+            <i class="fa-solid fa-magnifying-glass"></i> সার্চ ইউজার
+          </div>
+          <div class="search-row">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-search search-icon-inner"></i>
+              <input type="text" id="searchQ" placeholder="মোবাইল, নাম, FF নাম বা UID দিয়ে সার্চ করুন...">
+            </div>
+            <button class="abtn abtn-cyan" onclick="searchUser()">
+              <i class="fa-solid fa-search"></i> Search
+            </button>
+          </div>
+        </div>
+        <div id="userResults" style="margin-bottom:12px;"></div>
+
+        <div class="section-label">
+          <i class="fa-solid fa-users"></i> সকল রেজিস্টার্ড ইউজার
+          <span class="section-count" id="userCount">0 জন</span>
+        </div>
+        <div id="allUsersList">
+          <div class="aempty"><i class="fa-solid fa-users"></i><span>কোনো ইউজার নেই</span></div>
+        </div>
+      </div>
+
+      <!-- ══ TAB: DEPOSITS ══ -->
+      <div id="tab-deposits" class="atab-pane">
+        <div class="section-label">
+          <i class="fa-solid fa-arrow-down" style="color:var(--green)"></i> Pending ডিপোজিট রিকোয়েস্ট
+        </div>
+        <div id="depositList">
+          <div class="aempty"><i class="fa-solid fa-inbox"></i><span>কোনো Pending ডিপোজিট নেই</span></div>
+        </div>
+      </div>
+
+      <!-- ══ TAB: WITHDRAWALS ══ -->
+      <div id="tab-withdrawals" class="atab-pane">
+        <div class="section-label">
+          <i class="fa-solid fa-arrow-up" style="color:var(--primary)"></i> Pending উইথড্র রিকোয়েস্ট
+        </div>
+        <div id="withdrawList">
+          <div class="aempty"><i class="fa-solid fa-inbox"></i><span>কোনো Pending উইথড্র নেই</span></div>
+        </div>
+      </div>
+
+      <!-- ══ TAB: MATCHES ══ -->
+      <div id="tab-matches" class="atab-pane">
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-plus-circle" style="color:var(--green)"></i> নতুন ম্যাচ তৈরি করুন</div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">ম্যাচের নাম</label>
+              <input type="text" id="mName" placeholder="যেমন: Squad Battle #5">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">ক্যাটাগরি</label>
+              <div class="aselect-wrap">
+                <select id="mCategory">
+                  <option value="survival">BR Match</option>
+                  <option value="squad">CS 4vs4 / Squad</option>
+                  <option value="1vs1">Lone Wolf 1vs1</option>
+                  <option value="headshot">Headshot Only</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">মোড</label>
+              <div class="aselect-wrap">
+                <select id="mMode">
+                  <option value="Squad">Squad</option>
+                  <option value="Solo">Solo</option>
+                  <option value="Duo">Duo</option>
+                </select>
+              </div>
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">ম্যাপ</label>
+              <input type="text" id="mMap" placeholder="যেমন: Bermuda">
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Entry Fee (৳)</label>
+              <input type="number" id="mFee" placeholder="৩০" min="0">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Prize Pool (৳)</label>
+              <input type="number" id="mPrize" placeholder="৬০০" min="0">
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Per Kill (৳)</label>
+              <input type="number" id="mPerKill" placeholder="১০" min="0">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Max Slots</label>
+              <input type="number" id="mSlots" placeholder="৪৮" min="1">
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Status</label>
+              <div class="aselect-wrap">
+                <select id="mStatus">
+                  <option value="upcoming">Upcoming</option>
+                  <option value="live">Live</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">সময়</label>
+              <input type="text" id="mTime" placeholder="যেমন: 8:00 PM Today">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Banner Image URL</label>
+            <input type="text" id="mImage" placeholder="https://... বা img/modes/mode-br.jpg">
+            <div class="aform-hint">ম্যাচ কার্ডের ব্যাকগ্রাউন্ড ছবি।</div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group"><label class="aform-label">🥇 1st (৳)</label><input type="number" id="mP1" placeholder="৩০০"></div>
+            <div class="aform-group"><label class="aform-label">🥈 2nd (৳)</label><input type="number" id="mP2" placeholder="১৫০"></div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group"><label class="aform-label">🥉 3rd (৳)</label><input type="number" id="mP3" placeholder="৫০"></div>
+            <div class="aform-group"><label class="aform-label">4th & 5th (৳)</label><input type="number" id="mP4" placeholder="২০"></div>
+          </div>
+          <button class="abtn abtn-green abtn-full" onclick="addMatch()">
+            <i class="fa-solid fa-plus"></i> ম্যাচ তৈরি করুন
+          </button>
+        </div>
+        <div class="section-label">
+          <i class="fa-solid fa-list"></i> সকল ম্যাচ
+          <span class="section-count" id="matchCount">0 টি</span>
+        </div>
+        <div id="allMatchesList"><div class="aempty"><i class="fa-solid fa-gamepad"></i><span>কোনো ম্যাচ নেই</span></div></div>
+      </div>
+
+      <!-- ══ TAB: RESULTS ══ -->
+      <div id="tab-results" class="atab-pane">
+        <!-- Step 1: Select Match -->
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> ম্যাচ সিলেক্ট করুন</div>
+          <div class="aform-group">
+            <label class="aform-label">ম্যাচ বেছে নিন</label>
+            <div class="aselect-wrap">
+              <select id="resTournament" onchange="loadMatchPlayers()"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Players list for that match -->
+        <div class="section-label"><i class="fa-solid fa-users"></i> জয়েন করা প্লেয়ার তালিকা</div>
+        <div id="matchPlayersList">
+          <div class="aempty"><i class="fa-solid fa-users"></i><span>ম্যাচ সিলেক্ট করুন</span></div>
+        </div>
+
+        <!-- Step 3: Give result to selected player -->
+        <div class="acard" id="giveResultCard" style="display:none; margin-top:16px;">
+          <div class="acard-header"><i class="fa-solid fa-star" style="color:var(--gold)"></i> ফলাফল দিন — <span id="resultPlayerName" style="color:var(--green)"></span></div>
+          <div id="foundPlayer"></div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Total Kills</label>
+              <input type="number" id="resKills" placeholder="Kill সংখ্যা" min="0" oninput="calcPrizePreview()">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Placement</label>
+              <div class="aselect-wrap">
+                <select id="resPlacement" onchange="calcPrizePreview()">
+                  <option value="0">No Placement</option>
+                  <option value="1">🥇 1st (Winner)</option>
+                  <option value="2">🥈 2nd Place</option>
+                  <option value="3">🥉 3rd Place</option>
+                  <option value="4">4th Place</option>
+                  <option value="5">5th Place</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="prizePreview" class="prize-preview-box" style="display:none;"></div>
+          <button class="abtn abtn-green abtn-full" onclick="submitResult()">
+            <i class="fa-solid fa-circle-check"></i> প্রাইজ দিন
+          </button>
+          <button class="abtn abtn-red abtn-full" onclick="cancelResultSelect()" style="margin-top:8px;">
+            <i class="fa-solid fa-xmark"></i> বাতিল করুন
+          </button>
+        </div>
+
+        <div class="section-label" style="margin-top:12px;"><i class="fa-solid fa-clock-rotate-left"></i> সাম্প্রতিক পুরস্কার ইতিহাস</div>
+        <div id="resultHistory"><div class="aempty"><i class="fa-solid fa-inbox"></i><span>কোনো ইতিহাস নেই</span></div></div>
+      </div>
+
+      <!-- ══ TAB: NOTIFY ══ -->
+      <div id="tab-notify" class="atab-pane">
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-key" style="color:var(--secondary)"></i> রুম আইডি ও পাসওয়ার্ড পাবলিশ করুন</div>
+          <div class="aform-group">
+            <label class="aform-label">ম্যাচ বেছে নিন</label>
+            <div class="aselect-wrap">
+              <select id="notifyTournament"></select>
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Match Room ID</label>
+              <input type="text" id="roomID" placeholder="Room ID টাইপ করুন">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Room Password</label>
+              <input type="text" id="roomPass" placeholder="Password টাইপ করুন">
+            </div>
+          </div>
+          <button class="abtn abtn-cyan abtn-full" onclick="sendRoomNotify()">
+            <i class="fa-solid fa-bell"></i> Room Code পাবলিশ করুন
+          </button>
+        </div>
+
+        <!-- Manual Balance -->
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold)"></i> ম্যানুয়াল ব্যালেন্স সমন্বয়</div>
+          <div class="aform-group">
+            <label class="aform-label">ইউজার মোবাইল বা UID</label>
+            <input type="text" id="manualUID" placeholder="প্লেয়ার মোবাইল বা UID লিখুন">
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">পরিমাণ (৳)</label>
+              <input type="number" id="manualAmt" placeholder="+১০০ বা -৫০">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">কারণ / নোট</label>
+              <input type="text" id="manualNote" placeholder="যেমন: রেফারেল বোনাস">
+            </div>
+          </div>
+          <button class="abtn abtn-gold abtn-full" onclick="manualBalance()">
+            <i class="fa-solid fa-rotate"></i> ব্যালেন্স আপডেট করুন
+          </button>
+        </div>
+      </div>
+
+      <!-- ══ TAB: MODES ══ -->
+      <div id="tab-modes" class="atab-pane">
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-square-plus" style="color:var(--green)"></i> নতুন গেম মোড যুক্ত করুন</div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">মোডের নাম (Mode Name)</label>
+              <input type="text" id="modeName" placeholder="যেমন: Squad Battle CS">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">ফিল্টার ট্যাগ (Filter Tag)</label>
+              <input type="text" id="modeTag" placeholder="যেমন: cs_mode (ছোট হাতের ও স্পেস ছাড়া)">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">মোড পিকচার (Image URL)</label>
+            <input type="text" id="modeImage" placeholder="যেমন: img/modes/mode-cs.jpg বা অনলাইন ছবির লিঙ্ক">
+            <div class="aform-hint">মোড সিলেকশন গ্রিডে এই ছবিটি দেখানো হবে।</div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">অথবা ছবি আপলোড করুন (Base64)</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <input type="file" id="modeFile" accept="image/*" onchange="handleModeImageUpload(this)" style="display:none;">
+              <button class="abtn abtn-cyan" onclick="document.getElementById('modeFile').click()">
+                <i class="fa-solid fa-upload"></i> ছবি নির্বাচন করুন
+              </button>
+              <span id="modeFileName" style="font-size:0.85rem; color:var(--muted)">কোনো ফাইল সিলেক্ট করা হয়নি</span>
+            </div>
+            <div id="modeImgPreview" style="margin-top:10px; display:none;">
+              <img src="" id="modePreviewImg" style="max-width:120px; border-radius:8px; border:1px solid var(--secondary); box-shadow:0 0 10px rgba(0,240,255,0.2);">
+            </div>
+          </div>
+          <button class="abtn abtn-green abtn-full" onclick="addCustomMode()">
+            <i class="fa-solid fa-plus"></i> মোড যুক্ত করুন
+          </button>
+        </div>
+
+        <div class="section-label">
+          <i class="fa-solid fa-layer-group"></i> বর্তমান গেম মোডসমূহ
+          <span class="section-count" id="modeCount">0 টি</span>
+        </div>
+        <div id="allModesList"><div class="aempty"><i class="fa-solid fa-gamepad"></i><span>কোনো মোড নেই</span></div></div>
+      </div>
+
+      <!-- ══ TAB: SETTINGS ══ -->
+      <div id="tab-settings" class="atab-pane">
+        
+        <div class="acard">
+          <div class="acard-header">
+            <i class="fa-solid fa-images" style="color:var(--secondary)"></i> হোম পেজ ব্যানার (Slider)
+          </div>
+          <div id="bannerList" style="margin-bottom:12px;"></div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Banner Image URL (অথবা নিচে আপলোড করুন)</label>
+              <input type="text" id="newBannerImg" placeholder="https://... বা img/modes/ ছবির লিংক দিন...">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Banner Link (Optional)</label>
+              <input type="text" id="newBannerLink" placeholder="ক্লিক করলে কোথায় যাবে?">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">অথবা ছবি আপলোড করুন</label>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <input type="file" id="bannerFile" accept="image/*" onchange="handleBannerImageUpload(this)" style="display:none;">
+              <button class="abtn abtn-cyan" onclick="document.getElementById('bannerFile').click()">
+                <i class="fa-solid fa-upload"></i> ব্যানার ছবি নির্বাচন করুন
+              </button>
+              <span id="bannerFileName" style="font-size:0.85rem; color:var(--muted)">কোনো ফাইল সিলেক্ট করা হয়নি</span>
+            </div>
+            <div id="bannerImgPreview" style="margin-top:10px; display:none;">
+              <img src="" id="bannerPreviewImg" style="max-width:100%; max-height:120px; border-radius:8px; border:1px solid var(--secondary); box-shadow:0 0 10px rgba(0,240,255,0.2); object-fit:cover;">
+            </div>
+          </div>
+          <button class="abtn abtn-cyan abtn-full" onclick="addBanner()">
+            <i class="fa-solid fa-plus"></i> নতুন ব্যানার যুক্ত করুন
+          </button>
+        </div>
+
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-video" style="color:var(--secondary)"></i> লাইভ স্ট্রিম সেটিংস
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Live Stream Embed URL (YouTube/Twitch)</label>
+            <input type="text" id="cfgLiveLink" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+            <div class="aform-hint">ইউজার অ্যাপের Watch Live ট্যাবে দেখা যাবে। ফাঁকা রাখলে বন্ধ থাকবে।</div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Add Money Tutorial URL (YouTube)</label>
+            <input type="text" id="cfgTutorialLink" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+            <div class="aform-hint">Add Money পেজে Tutorial হিসেবে দেখা যাবে।</div>
+          </div>
+        </div>
+
+        <!-- ── PER-MODE CUSTOM RULES ── -->
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-file-lines" style="color:var(--gold)"></i> 📋 ম্যাচের নিয়ম সেটিংস (Mode-wise Rules)
+          </div>
+          <div class="aform-sub" style="margin-bottom:14px; padding:0 6px;">
+            প্রতিটি গেম মোডের জন্য আলাদা নিয়ম লিখুন। আপনি যেটা লিখবেন, সেটাই উক্ত মোডের সব ম্যাচের
+            "Match Rules" ট্যাবে দেখাবে। ফাঁকা রাখলে ডিফল্ট নিয়ম দেখাবে।
+          </div>
+          <div id="modeRulesContainer">
+            <!-- Dynamically rendered by loadModeRulesForm() -->
+          </div>
+          <button class="abtn abtn-gold abtn-full" onclick="saveModeRules()" style="margin-top:12px;">
+            <i class="fa-solid fa-floppy-disk"></i> সব মোডের নিয়ম সেভ করুন
+          </button>
+        </div>
+
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-image" style="color:var(--gold)"></i> 🖼️ ওয়েবসাইট ব্যাকগ্রাউন্ড ছবি
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">ব্যাকগ্রাউন্ড Image URL (অথবা নিচে আপলোড করুন)</label>
+            <input type="text" id="cfgBgUrl" placeholder="https://... বা ছবির লিংক দিন...">
+            <div class="aform-hint">পুরো ওয়েবসাইটের ব্যাকগ্রাউন্ডে এই ছবিটি দেখা যাবে।</div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">অথবা ছবি আপলোড করুন</label>
+            <div class="bg-upload-row" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <input type="file" id="bgFile" accept="image/*" onchange="handleBgImageUpload(this)" style="display:none;">
+              <button class="abtn abtn-cyan" onclick="document.getElementById('bgFile').click()">
+                <i class="fa-solid fa-upload"></i> ছবি নির্বাচন করুন
+              </button>
+              <span id="bgFileName" style="font-size:0.85rem; color:var(--muted)">কোনো ফাইল সিলেক্ট করা হয়নি</span>
+            </div>
+            <div id="bgImgPreview" style="margin-top:10px; display:none;">
+              <img src="" id="bgPreviewImg" style="max-width:100%; max-height:150px; border-radius:8px; border:1px solid var(--secondary); box-shadow:0 0 10px rgba(0,240,255,0.2); object-fit:cover;">
+            </div>
+          </div>
+          <div class="bg-actions-row" style="display:flex; gap:10px; margin-top:12px;">
+            <button class="abtn abtn-green abtn-full" onclick="saveBgImage()">
+              <i class="fa-solid fa-floppy-disk"></i> ব্যাকগ্রাউন্ড সেভ করুন
+            </button>
+            <button class="abtn abtn-red" onclick="removeBgImage()" style="flex:0.5;">
+              <i class="fa-solid fa-trash"></i> মুছুন
+            </button>
+          </div>
+        </div>
+
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-credit-card" style="color:var(--gold)"></i> পেমেন্ট নম্বর সেটিংস
+          </div>
+          <div class="pay-settings-grid">
+            <div class="pay-settings-item bkash">
+              <div class="psi-label"><i class="fa-solid fa-heart"></i> bKash Personal</div>
+              <input type="text" id="cfgBkash" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="pay-settings-item nagad">
+              <div class="psi-label"><i class="fa-solid fa-gem"></i> Nagad Personal</div>
+              <input type="text" id="cfgNagad" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="pay-settings-item rocket">
+              <div class="psi-label"><i class="fa-solid fa-rocket"></i> Rocket Personal</div>
+              <input type="text" id="cfgRocket" placeholder="01XXXXXXXXX">
+            </div>
+          </div>
+          <button class="abtn abtn-green abtn-full" onclick="saveSettings()" style="margin-top:20px;">
+            <i class="fa-solid fa-floppy-disk"></i> সমস্ত সেটিংস সেভ করুন
+          </button>
+        </div>
+      </div>
+
+    </div><!-- .admin-content -->
+  </main>
+</div><!-- .admin-layout -->
+
+<!-- MOBILE SIDEBAR OVERLAY -->
+<div class="admin-overlay" id="adminOverlay" onclick="toggleAdminSidebar()"></div>
+
+<div id="toast"></div>
+<script src="js/admin.js"></script>
+<script>
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2,'0');
+    const m = now.getMinutes().toString().padStart(2,'0');
+    const s = now.getSeconds().toString().padStart(2,'0');
+    const el = document.getElementById('adminTime');
+    if (el) el.textContent = h + ':' + m + ':' + s;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Sidebar toggle (mobile)
+  function toggleAdminSidebar() {
+    document.getElementById('adminSidebar').classList.toggle('open');
+    document.getElementById('adminOverlay').classList.toggle('active');
+  }
+
+  function updateBadges() {
+    load();
+    const users = Object.values(DB.users || {});
+    const pendingDep = (DB.deposits || []).filter(d => d.status === 'pending').length;
+    const pendingWith = (DB.withdrawals || []).filter(w => w.status === 'pending').length;
+    const matchCount = (DB.matches || []).length;
+
+    const uCount = document.getElementById('userCount');
+    if (uCount) uCount.textContent = users.length + ' জন';
+
+    const matchCnt = document.getElementById('matchCount');
+    if (matchCnt) matchCnt.textContent = matchCount + ' টি';
+
+    const sbU = document.getElementById('sbStatUsers');
+    if (sbU) sbU.textContent = users.length;
+
+    const sbP = document.getElementById('sbStatPending');
+    if (sbP) sbP.textContent = pendingDep + pendingWith;
+
+    const bdep = document.getElementById('badge-deposits');
+    if (bdep) { bdep.textContent = pendingDep || ''; bdep.style.display = pendingDep ? 'flex' : 'none'; }
+
+    const bwith = document.getElementById('badge-withdrawals');
+    if (bwith) { bwith.textContent = pendingWith || ''; bwith.style.display = pendingWith ? 'flex' : 'none'; }
+
+    const bmatch = document.getElementById('badge-matches');
+    if (bmatch) { bmatch.textContent = matchCount || ''; bmatch.style.display = matchCount ? 'flex' : 'none'; }
+
+    const modeCount = (DB.modes || []).length;
+    const bmode = document.getElementById('badge-modes');
+    if (bmode) { bmode.textContent = modeCount || ''; bmode.style.display = modeCount ? 'flex' : 'none'; }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    load();
+    updateBadges();
+    renderMatchList();
+  });
+</script>
+</body>
+</html>
