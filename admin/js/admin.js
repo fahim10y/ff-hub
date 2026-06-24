@@ -1101,10 +1101,10 @@ function removeBgImage() {
   save();
   uploadedBgImgBase64 = '';
   document.getElementById('bgFile').value = '';
-  document.getElementById('bgFileName').textContent = '\u0995\u09CB\u09A8\u09CB \u09AB\u09BE\u0987\u09B2 \u09B8\u09BF\u09B2\u09C7\u0995\u09CD\u099F \u0995\u09B0\u09BE \u09B9\u09AF\u09BC\u09A8\u09BF';
+  document.getElementById('bgFileName').textContent = 'কোনো ফাইল সিলেক্ট করা হয়নি';
   const preview = document.getElementById('bgImgPreview');
   if (preview) preview.style.display = 'none';
-  toast('\u09AC\u09CD\u09AF\u09BE\u0995\u0997\u09CD\u09B0\u09BE\u0989\u09A8\u09CD\u09A1 \u099B\u09AC\u09BF \u09e\u09c1\u099b\u09c7 \u09ab\u09c7\u09b2\u09be \u09b9\u09af\u09bc\u09c7\u099b\u09c7!', 'info');
+  toast('ব্যাকগ্রাউন্ড ছবি মুছে ফেলা হয়েছে!', 'info');
 }
 
 function saveSettings() {
