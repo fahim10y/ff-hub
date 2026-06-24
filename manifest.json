@@ -1,16 +1,51 @@
 {
+  "id": "com.ffhub.tournament",
   "name": "FF Tournament BD",
-  "short_name": "FF Tournament",
-  "description": "Bangladesh Free Fire Tournament Platform",
+  "short_name": "FF Hub",
+  "description": "Bangladesh Free Fire Tournament Platform — Join, Play, Win!",
   "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a0a0f",
-  "theme_color": "#ff4500",
+  "theme_color": "#ffd700",
   "orientation": "portrait-primary",
+  "lang": "bn",
+  "categories": ["games", "sports", "entertainment"],
   "icons": [
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "assets/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
-  "categories": ["games", "sports"],
-  "lang": "bn"
+  "screenshots": [
+    {
+      "src": "assets/logo.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "FF Hub Home Screen"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Join Tournament",
+      "short_name": "Join",
+      "description": "Join a Free Fire tournament",
+      "url": "/index.html",
+      "icons": [{ "src": "assets/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Admin Panel",
+      "short_name": "Admin",
+      "description": "Open admin control panel",
+      "url": "/admin/",
+      "icons": [{ "src": "assets/icon-96.png", "sizes": "96x96" }]
+    }
+  ]
 }
