@@ -235,7 +235,7 @@ function backToNotifyMatchList() {
 function loadResultMatchCards() {
   load();
   const filter = currentResMode;
-  const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
+  const matches = (DB.matches || []).filter(m => (filter === '' || m.category === filter) && m.status !== 'done');
   
   const html = matches.length
     ? matches.map(m => `
@@ -262,7 +262,7 @@ function loadResultMatchCards() {
 function loadNotifyMatchCards() {
   load();
   const filter = currentNotifyMode;
-  const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
+  const matches = (DB.matches || []).filter(m => (filter === '' || m.category === filter) && m.status !== 'done');
   
   const html = matches.length
     ? matches.map(m => `
