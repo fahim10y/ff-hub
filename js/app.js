@@ -979,7 +979,10 @@ function renderTournaments() {
             <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/52/Free_Fire_logo.svg/320px-Free_Fire_logo.svg.png" style="height:18px; object-fit:contain; filter: drop-shadow(0 0 5px rgba(255,183,0,0.5));" alt="FF">
             <div class="mc-title">${t.name}</div>
           </div>
-          <div class="mc-map-sub">🗺 ${t.map} &nbsp;·&nbsp; 🕐 ${t.time}</div>
+          <div class="mc-map-sub">
+            🗺 ${t.map} &nbsp;·&nbsp; 🕐 <span class="match-time-display" data-time="${t.time}">${t.time}</span>
+            <div class="countdown-timer" data-time="${t.time}" style="color:var(--secondary); font-weight:bold; margin-top:4px;"></div>
+          </div>
         </div>
       </div>
       <div class="mc-body">
@@ -1044,8 +1047,9 @@ function openMatchDetail(tid) {
   document.getElementById('mdsMeta').innerHTML = `
     <span class="mds-tag">🗺 ${t.map}</span>
     <span class="mds-tag">👥 ${t.mode}</span>
-    <span class="mds-tag">🕐 ${t.time}</span>
-    <span class="mds-tag" style="color:var(--gold);border-color:rgba(255,183,0,0.3);">🏆 ৳${t.prizePool}</span>`;
+    <span class="mds-tag">🕐 <span class="match-time-display" data-time="${t.time}">${t.time}</span></span>
+    <span class="mds-tag" style="color:var(--gold);border-color:rgba(255,183,0,0.3);">🏆 ৳${t.prizePool}</span>
+    <div class="countdown-timer" data-time="${t.time}" style="color:var(--secondary); font-weight:bold; margin-top:8px; font-size:1rem; text-align:center;"></div>`;
 
   // ── Use per-mode custom rules from Settings (if set), or fall back to auto-generated rules ──
   const modeRules = DB.settings && DB.settings.modeRules ? DB.settings.modeRules : {};
@@ -1813,3 +1817,53 @@ applyBgImage();
     afterLogin();
   }
 })();
+
+// ── MATCH LIVE COUNTDOWN TIMER ────────────────────
+setInterval(() => {
+  const now = new Date().getTime();
+  
+  // Format the raw time strings nicely
+  document.querySelectorAll('.match-time-display').forEach(el => {
+    if (el.dataset.formatted) return; // already formatted
+    const rawTime = el.getAttribute('data-time');
+    if (!rawTime) return;
+    try {
+      const d = new Date(rawTime);
+      if (!isNaN(d.getTime())) {
+        el.textContent = d.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) + ' ' + d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+      } else {
+        el.textContent = rawTime; // fallback if plain string
+      }
+    } catch(e) {}
+    el.dataset.formatted = "true";
+  });
+
+  // Update live countdowns
+  document.querySelectorAll('.countdown-timer').forEach(el => {
+    const rawTime = el.getAttribute('data-time');
+    if (!rawTime) return;
+    
+    const targetDate = new Date(rawTime).getTime();
+    if (isNaN(targetDate)) {
+      el.style.display = 'none';
+      return;
+    }
+    
+    const diff = targetDate - now;
+    
+    if (diff < 0) {
+      el.textContent = "🔴 LIVE NOW (Match Started)";
+      el.style.color = "var(--primary)";
+    } else {
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      let str = "⏳ Starts in: ";
+      if (h > 0) str += `${h}h `;
+      str += `${m}m ${s}s`;
+      el.textContent = str;
+      el.style.color = "var(--secondary)";
+    }
+  });
+}, 1000);

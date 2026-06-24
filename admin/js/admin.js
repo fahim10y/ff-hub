@@ -107,17 +107,45 @@ function toast(msg, type = 'success') {
 // ── TABS ────────────────────────────────────────
 function populateMatchSelects() {
   load();
-  const matches = DB.matches || [];
+  
+  // Populate mode filters
+  const modes = (DB.modes || []).filter(m => m.tag !== 'all');
+  const modeOpts = '<option value="">All Modes (সব মোড)</option>' + 
+    modes.map(m => `<option value="${m.tag}">${m.name}</option>`).join('');
+  
+  const resMode = document.getElementById('resModeFilter');
+  const notMode = document.getElementById('notifyModeFilter');
+  if (resMode) resMode.innerHTML = modeOpts;
+  if (notMode) notMode.innerHTML = modeOpts;
+  
+  loadResultMatchOptions();
+  loadNotifyMatchOptions();
+}
+
+function loadResultMatchOptions() {
+  load();
+  const filter = document.getElementById('resModeFilter')?.value || '';
+  const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
+  
   const opts = matches.length
     ? matches.map(m => `<option value="${m.id}">${m.name} — ৳${m.perKill}/kill</option>`).join('')
     : '<option value="">কোনো ম্যাচ নেই</option>';
-  const notifyOpts = matches.length
+    
+  const resTour = document.getElementById('resTournament');
+  if (resTour) { resTour.innerHTML = opts; loadMatchPlayers(); }
+}
+
+function loadNotifyMatchOptions() {
+  load();
+  const filter = document.getElementById('notifyModeFilter')?.value || '';
+  const matches = (DB.matches || []).filter(m => filter === '' || m.category === filter);
+  
+  const opts = matches.length
     ? matches.map(m => `<option value="${m.id}">${m.name}</option>`).join('')
     : '<option value="">কোনো ম্যাচ নেই</option>';
-  const resTour = document.getElementById('resTournament');
-  const notifyT = document.getElementById('notifyTournament');
-  if (resTour) { resTour.innerHTML = opts; loadMatchPlayers(); }
-  if (notifyT) notifyT.innerHTML = notifyOpts;
+    
+  const notTour = document.getElementById('notifyTournament');
+  if (notTour) notTour.innerHTML = opts;
 }
 
 const TAB_TITLES = {
@@ -469,6 +497,13 @@ function submitResult() {
 
   const user = DB.users[foundPlayerPhone];
   if (!user) { toast('User পাওয়া যায়নি!', 'error'); return; }
+
+  // Prevent duplicate prize distribution for the same match
+  const alreadyRewarded = (DB.resultLog || []).find(r => String(r.uid) === String(user.uid) && String(r.tournament) === String(t.name));
+  if (alreadyRewarded) {
+    toast('এই প্লেয়ারকে এই ম্যাচে আগে থেকেই প্রাইজ দেওয়া হয়েছে!', 'error');
+    return;
+  }
 
   if (user.earnBalance === undefined) user.earnBalance = 0;
   user.earnBalance += total;

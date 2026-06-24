@@ -240,7 +240,7 @@
             </div>
             <div class="aform-group">
               <label class="aform-label">সময়</label>
-              <input type="text" id="mTime" placeholder="যেমন: 8:00 PM Today">
+              <input type="datetime-local" id="mTime">
             </div>
           </div>
           <div class="aform-group">
@@ -272,6 +272,12 @@
         <!-- Step 1: Select Match -->
         <div class="acard">
           <div class="acard-header"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> ম্যাচ সিলেক্ট করুন</div>
+          <div class="aform-group">
+            <label class="aform-label">মোড বেছে নিন</label>
+            <div class="aselect-wrap">
+              <select id="resModeFilter" onchange="loadResultMatchOptions()"></select>
+            </div>
+          </div>
           <div class="aform-group">
             <label class="aform-label">ম্যাচ বেছে নিন</label>
             <div class="aselect-wrap">
@@ -326,6 +332,12 @@
       <div id="tab-notify" class="atab-pane">
         <div class="acard">
           <div class="acard-header"><i class="fa-solid fa-key" style="color:var(--secondary)"></i> রুম আইডি ও পাসওয়ার্ড পাবলিশ করুন</div>
+          <div class="aform-group">
+            <label class="aform-label">মোড বেছে নিন</label>
+            <div class="aselect-wrap">
+              <select id="notifyModeFilter" onchange="loadNotifyMatchOptions()"></select>
+            </div>
+          </div>
           <div class="aform-group">
             <label class="aform-label">ম্যাচ বেছে নিন</label>
             <div class="aselect-wrap">
