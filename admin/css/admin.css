@@ -718,6 +718,11 @@ select { cursor: pointer; appearance: none; }
 }
 
 /* Small phones (under 400px) */
+/* ── TOAST (highest z-index so it's always visible above the login overlay) ── */
+#toast {
+  z-index: 10001 !important;
+}
+
 @media (max-width: 400px) {
   .admin-content { padding: 10px; }
   .acard { padding: 12px; }

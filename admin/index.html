@@ -775,24 +775,65 @@
 </div>
 
 <!-- ── ADMIN LOGIN MODAL ── -->
+<style>
+  @keyframes loginShake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-5px); }
+    80%      { transform: translateX(5px); }
+  }
+</style>
 <div id="adminLoginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0d14; z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column;">
   <div style="text-align:center; margin-bottom:20px;">
     <i class="fa-solid fa-shield-halved" style="font-size:3rem; color:var(--primary);"></i>
-    <h2 style="color:var(--text); margin-top:10px; font-family:'Orbitron', sans-serif;">ADMIN LOGIN</h2>
+    <h2 style="color:var(--text); margin-top:10px; font-family:'Orbitron', sans-serif;" id="loginOverlayTitle">ADMIN LOGIN</h2>
   </div>
-  <div class="acard" style="width:90%; max-width:350px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); border:1px solid rgba(0,240,255,0.2);">
-    <div class="aform-group">
-      <label class="aform-label">Username</label>
-      <input type="text" id="loginUser" placeholder="Enter username" onkeydown="if(event.key==='Enter') adminLogin()">
+
+  <!-- ── PASSWORD LOGIN FORM ── -->
+  <div id="adminLoginForm" class="acard" style="width:90%; max-width:350px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); border:1px solid rgba(0,240,255,0.2);">
+    <div style="font-size:0.82rem; color:var(--muted); text-align:center; margin-bottom:14px; padding:8px; background:rgba(0,240,255,0.05); border-radius:8px; border:1px solid rgba(0,240,255,0.1);">
+      <i class="fa-solid fa-lock" style="color:var(--secondary);"></i> আপনার এডমিন পাসওয়ার্ড দিয়ে লগইন করুন
     </div>
     <div class="aform-group">
-      <label class="aform-label">Password</label>
-      <input type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter') adminLogin()">
+      <label class="aform-label">পাসওয়ার্ড</label>
+      <input type="password" id="loginPass" placeholder="এডমিন পাসওয়ার্ড দিন" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') adminLogin()" style="font-size:1rem; letter-spacing:2px;">
     </div>
-    <button class="abtn abtn-cyan abtn-full" onclick="adminLogin()" style="margin-top:8px;">
-      <i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard
+    <button class="abtn abtn-cyan abtn-full" onclick="adminLogin()" style="margin-top:12px;">
+      <i class="fa-solid fa-right-to-bracket"></i> লগইন করুন
     </button>
   </div>
+
+  <!-- ── FIRST-TIME SETUP FORM ── -->
+  <div id="adminSetupForm" class="acard" style="display:none; width:90%; max-width:380px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); border:1px solid rgba(0,255,136,0.25);">
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="font-size:1.5rem;">🔐</div>
+      <div style="font-weight:700; color:var(--green); font-size:1rem; margin-top:4px;">প্রথমবার সেটআপ</div>
+      <div style="font-size:0.8rem; color:var(--muted); margin-top:6px; line-height:1.5;">
+        এটি আপনার প্রথম ভিজিট। একটি নিরাপদ পাসওয়ার্ড তৈরি করুন।<br>
+        পরের বার এই পাসওয়ার্ড দিয়েই লগইন করতে হবে।
+      </div>
+    </div>
+    <div class="aform-group">
+      <label class="aform-label">নতুন পাসওয়ার্ড তৈরি করুন</label>
+      <input type="password" id="setupPass" placeholder="কমপক্ষে ৪ অক্ষর" autocomplete="new-password"
+             onkeydown="if(event.key==='Enter') document.getElementById('setupPass2').focus()"
+             style="font-size:1rem; letter-spacing:2px;">
+    </div>
+    <div class="aform-group">
+      <label class="aform-label">পাসওয়ার্ড আবার দিন</label>
+      <input type="password" id="setupPass2" placeholder="পাসওয়ার্ড কনফার্ম করুন" autocomplete="new-password"
+             onkeydown="if(event.key==='Enter') adminFirstTimeSetup()"
+             style="font-size:1rem; letter-spacing:2px;">
+    </div>
+    <button class="abtn abtn-full" onclick="adminFirstTimeSetup()" style="margin-top:12px; background:linear-gradient(135deg,#00ff88,#00c853); color:#000; font-weight:800;">
+      <i class="fa-solid fa-key"></i> পাসওয়ার্ড সেট করুন ও ঢুকুন
+    </button>
+  </div>
+
+  <!-- Shared error message box (shown below whichever form is active) -->
+  <div id="loginError" style="display:none; margin-top:12px; width:90%; max-width:380px; padding:10px; border-radius:8px; font-size:0.85rem; font-weight:700; text-align:center;"></div>
 </div>
 
 <!-- ── ADMIN PASSWORD CHANGE MODAL ── -->

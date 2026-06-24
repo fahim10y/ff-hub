@@ -1,0 +1,11 @@
+{
+  "admins": {
+    "Fahim01f": {
+      "role": "main",
+      "password": "019499",
+      "perms": [
+        "all"
+      ]
+    }
+  }
+}

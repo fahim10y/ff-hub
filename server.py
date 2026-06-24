@@ -142,6 +142,12 @@ def main():
 
     server = HTTPServer(('0.0.0.0', port), FFHubHandler)
 
+    if sys.stdout.encoding.lower() != 'utf-8':
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except AttributeError:
+            pass # Python < 3.7
+
     print()
     print('╔══════════════════════════════════════════════════╗')
     print('║       🔥 FF HUB — PERSISTENT LOCAL SERVER       ║')

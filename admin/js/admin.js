@@ -80,16 +80,17 @@ function load() {
   if (!Array.isArray(DB.modes)) {
     DB.modes = [];
   }
-  // Ensure at least one main admin always exists
+  // Ensure main admin always exists. password='' means first-time setup (no login required yet)
   if (!DB.admins || Object.keys(DB.admins).length === 0) {
     DB.admins = {
-      "admin": { role: "main", password: "admin", perms: ['all'] }
+      "admin": { role: "main", password: "", perms: ['all'] }
     };
+    // Don't call save() here — avoid infinite loop; caller will save if needed
   } else {
-    // Check if there is at least one main admin — if not, restore default
+    // Check if there is at least one main admin — if not, restore
     const hasMainAdmin = Object.values(DB.admins).some(a => a.role === 'main');
     if (!hasMainAdmin) {
-      DB.admins["admin"] = { role: "main", password: "admin", perms: ['all'] };
+      DB.admins["admin"] = { role: "main", password: "", perms: ['all'] };
     }
   }
 }
@@ -1518,35 +1519,93 @@ function deleteCustomMode(id) {
 // ── ADMIN LOGIN & SUB ADMIN SYSTEM ────────────
 let currentAdmin = null;
 
+// Returns true if admin password has never been set (first time setup)
+function isFirstTimeSetup() {
+  load();
+  const mainAdmin = Object.values(DB.admins || {}).find(a => a.role === 'main');
+  return !mainAdmin || mainAdmin.password === '' || mainAdmin.password === null || mainAdmin.password === undefined;
+}
+
 function adminLogin() {
   load();
-  const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
 
-  if (!user || !pass) { toast('ইউজারনেম ও পাসওয়ার্ড দিন!', 'error'); return; }
-
-  // Emergency safety: if DB has no admins, create the default admin right now
-  if (!DB.admins || Object.keys(DB.admins).length === 0) {
-    DB.admins = { "admin": { role: "main", password: "admin", perms: ['all'] } };
-    save(); // persist this so it survives refresh
+  if (!pass) {
+    showLoginError('পাসওয়ার্ড দিন!', 'error');
+    return;
   }
 
-  if (DB.admins[user] && DB.admins[user].password === pass) {
-    localStorage.setItem('adminSession', user);
+  // Find the main admin
+  const mainAdminKey = Object.keys(DB.admins || {}).find(k => DB.admins[k].role === 'main');
+  if (!mainAdminKey) {
+    showLoginError('❌ সিস্টেম এরর! পেজ রিফ্রেশ করুন।', 'error');
+    return;
+  }
+
+  if (DB.admins[mainAdminKey].password === pass) {
+    localStorage.setItem('adminSession', mainAdminKey);
     checkAdminSession();
     toast('✅ লগইন সফল হয়েছে!', 'success');
   } else {
-    // Show what the system currently expects (helpful for debugging)
-    const knownUsers = Object.keys(DB.admins).join(', ');
-    toast('❌ ইউজারনেম বা পাসওয়ার্ড ভুল! (Valid users: ' + knownUsers + ')', 'error');
+    showLoginError('❌ পাসওয়ার্ড ভুল! আবার চেষ্টা করুন।', 'error');
+    // Shake animation on the password field
+    const passEl = document.getElementById('loginPass');
+    if (passEl) {
+      passEl.style.animation = 'none';
+      passEl.offsetHeight; // reflow
+      passEl.style.animation = 'loginShake 0.4s ease';
+      passEl.value = '';
+      passEl.focus();
+    }
   }
+}
+
+// First-time password setup (no old password needed)
+function adminFirstTimeSetup() {
+  load();
+  const pass  = document.getElementById('setupPass').value.trim();
+  const pass2 = document.getElementById('setupPass2').value.trim();
+
+  if (!pass || !pass2) {
+    showLoginError('দুটো ঘরই পূরণ করুন!', 'error'); return;
+  }
+  if (pass.length < 4) {
+    showLoginError('পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে!', 'error'); return;
+  }
+  if (pass !== pass2) {
+    showLoginError('পাসওয়ার্ড দুটো মিলছে না!', 'error'); return;
+  }
+
+  // Set the password on the main admin
+  const mainAdminKey = Object.keys(DB.admins || {}).find(k => DB.admins[k].role === 'main') || 'admin';
+  if (!DB.admins) DB.admins = {};
+  if (!DB.admins[mainAdminKey]) DB.admins[mainAdminKey] = { role: 'main', perms: ['all'] };
+  DB.admins[mainAdminKey].password = pass;
+  save();
+
+  toast('✅ পাসওয়ার্ড সেট হয়েছে! লগইন করুন।', 'success');
+  // Switch to login view
+  checkAdminSession();
+}
+
+// Show error/success inline inside the login modal
+function showLoginError(msg, type) {
+  const el = document.getElementById('loginError');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = type === 'error' ? 'rgba(255,0,85,0.15)' : 'rgba(0,255,136,0.15)';
+  el.style.border = '1px solid ' + (type === 'error' ? 'rgba(255,0,85,0.3)' : 'rgba(0,255,136,0.3)');
+  el.style.color = type === 'error' ? 'var(--primary)' : 'var(--green)';
 }
 
 function adminLogout() {
   localStorage.removeItem('adminSession');
   currentAdmin = null;
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
+  const lp = document.getElementById('loginPass');
+  if (lp) lp.value = '';
+  const le = document.getElementById('loginError');
+  if (le) le.style.display = 'none';
   checkAdminSession();
   toast('Logged out successfully', 'info');
 }
@@ -1588,21 +1647,54 @@ function saveAdminPassword() {
   save();
   toast('✅ পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে!', 'success');
   closeAdminPassModal();
-  // Force re-login with new password
   adminLogout();
 }
 
 function checkAdminSession() {
+  load();
+  const overlay = document.getElementById('adminLoginOverlay');
+
+  // CASE 1: First-time setup — no password set yet → bypass login, show setup screen
+  if (isFirstTimeSetup()) {
+    currentAdmin = null;
+    localStorage.removeItem('adminSession');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      _showLoginView('setup');
+    }
+    return;
+  }
+
+  // CASE 2: Valid session stored
   const session = localStorage.getItem('adminSession');
   if (session && DB.admins && DB.admins[session]) {
     currentAdmin = DB.admins[session];
-    currentAdmin.username = session; // store username on object
-    const overlay = document.getElementById('adminLoginOverlay');
-    if(overlay) overlay.style.display = 'none';
+    currentAdmin.username = session;
+    if (overlay) overlay.style.display = 'none';
     applyPermissions();
+    return;
+  }
+
+  // CASE 3: No session → show password login
+  currentAdmin = null;
+  if (overlay) {
+    overlay.style.display = 'flex';
+    _showLoginView('login');
+  }
+}
+
+// Toggle between login form and first-time setup form inside the overlay
+function _showLoginView(mode) {
+  const loginView = document.getElementById('adminLoginForm');
+  const setupView = document.getElementById('adminSetupForm');
+  const errEl = document.getElementById('loginError');
+  if (errEl) errEl.style.display = 'none';
+  if (mode === 'setup') {
+    if (loginView) loginView.style.display = 'none';
+    if (setupView) setupView.style.display = 'block';
   } else {
-    const overlay = document.getElementById('adminLoginOverlay');
-    if(overlay) overlay.style.display = 'flex';
+    if (loginView) loginView.style.display = 'block';
+    if (setupView) setupView.style.display = 'none';
   }
 }
 
@@ -1775,8 +1867,6 @@ load();
 checkAdminSession();
 
 // ── SERVER SYNC: Fetch latest data from db.json (async) ──
-// The server (db.json) is the SINGLE SOURCE OF TRUTH for cross-browser consistency.
-// Every browser always gets the SAME data from the server on page load.
 (async function initFromServer() {
   try {
     const res = await fetch('/api/data');
@@ -1785,26 +1875,33 @@ checkAdminSession();
       const hasData = serverData && typeof serverData === 'object' && Object.keys(serverData).length > 0;
 
       if (hasData) {
-        // Read current localStorage so we can preserve admins if server lacks them
+        // ── ADMIN DATA MERGE STRATEGY ──
+        // Always preserve admins from whichever source has a REAL password set.
+        // Priority: localStorage (most recent user action) > server (db.json)
         let localData = {};
         try { localData = JSON.parse(localStorage.getItem('ffhub_db') || '{}'); } catch(e) {}
 
-        // If server data has NO admins (or empty admins), inherit from localStorage
-        if (!serverData.admins || Object.keys(serverData.admins).length === 0) {
-          if (localData.admins && Object.keys(localData.admins).length > 0) {
-            serverData.admins = localData.admins;
-          }
+        const localHasRealAdmin = localData.admins &&
+          Object.values(localData.admins).some(a => a.role === 'main' && a.password && a.password !== '');
+        const serverHasRealAdmin = serverData.admins &&
+          Object.values(serverData.admins).some(a => a.role === 'main' && a.password && a.password !== '');
+
+        if (localHasRealAdmin) {
+          // Trust localStorage admins — user has set password here
+          serverData.admins = localData.admins;
+        } else if (!serverHasRealAdmin) {
+          // Neither has a real password — keep blank (first-time setup)
+          serverData.admins = { "admin": { role: "main", password: "", perms: ['all'] } };
         }
+        // else: server has real admins and local doesn't → use server admins (already in serverData)
 
         localStorage.setItem('ffhub_db', JSON.stringify(serverData));
       }
 
-      // Always reload + re-validate session (works for both empty and full server data)
       load();
       checkAdminSession();
       updateBadges();
 
-      // Re-render the active tab
       const activeTab = document.querySelector('.atab-pane.active');
       if (activeTab) {
         const tabId = activeTab.id.replace('tab-', '');
