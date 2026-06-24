@@ -142,15 +142,37 @@ function populateMatchSelects() {
 }
 
 function selectResMode(tag) {
-  // Toggle selection
-  currentResMode = (currentResMode === tag) ? '' : tag;
-  populateMatchSelects();
+  currentResMode = tag;
+  const modeName = DB.modes.find(m => m.tag === tag)?.name || 'All Modes';
+  const resModeTitle = document.getElementById('resModeTitle');
+  if (resModeTitle) resModeTitle.textContent = modeName + " — ম্যাচ";
+  
+  document.getElementById('resModeView').style.display = 'none';
+  document.getElementById('resMatchView').style.display = 'block';
+  
+  loadResultMatchOptions();
+}
+
+function backToResModes() {
+  document.getElementById('resModeView').style.display = 'block';
+  document.getElementById('resMatchView').style.display = 'none';
 }
 
 function selectNotifyMode(tag) {
-  // Toggle selection
-  currentNotifyMode = (currentNotifyMode === tag) ? '' : tag;
-  populateMatchSelects();
+  currentNotifyMode = tag;
+  const modeName = DB.modes.find(m => m.tag === tag)?.name || 'All Modes';
+  const notifyModeTitle = document.getElementById('notifyModeTitle');
+  if (notifyModeTitle) notifyModeTitle.textContent = modeName + " — ম্যাচ";
+
+  document.getElementById('notifyModeView').style.display = 'none';
+  document.getElementById('notifyMatchView').style.display = 'block';
+  
+  loadNotifyMatchOptions();
+}
+
+function backToNotifyModes() {
+  document.getElementById('notifyModeView').style.display = 'block';
+  document.getElementById('notifyMatchView').style.display = 'none';
 }
 
 function loadResultMatchOptions() {
