@@ -102,6 +102,9 @@
         <i class="fa-solid fa-mobile-screen-button"></i> User App
         <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:0.7rem;"></i>
       </a>
+      <button class="abtn abtn-full" onclick="openAdminPassModal()" style="background:rgba(0,240,255,0.1); border:1px solid rgba(0,240,255,0.3); color:var(--cyan);">
+        <i class="fa-solid fa-key"></i> পাসওয়ার্ড পরিবর্তন
+      </button>
       <button class="abtn abtn-red abtn-full" onclick="adminLogout()">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
       </button>
@@ -790,6 +793,26 @@
       <i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard
     </button>
   </div>
+</div>
+
+<!-- ── ADMIN PASSWORD CHANGE MODAL ── -->
+<div class="admin-overlay" id="adminPassModalOverlay" style="z-index: 10002; display:none;" onclick="closeAdminPassModal()"></div>
+<div class="acard" id="adminPassModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index: 10003; width:90%; max-width:380px; box-shadow:0 10px 30px rgba(0,0,0,0.8); background:rgba(10,13,20,0.95); backdrop-filter:blur(10px); border:1px solid rgba(0,240,255,0.2);">
+  <div class="acard-header" style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+    <span><i class="fa-solid fa-key" style="color:var(--cyan)"></i> পাসওয়ার্ড পরিবর্তন করুন</span>
+    <button onclick="closeAdminPassModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="aform-group">
+    <label class="aform-label">বর্তমান পাসওয়ার্ড (Current Password)</label>
+    <input type="password" id="apCurrentPass" placeholder="বর্তমান পাসওয়ার্ড লিখুন" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); width:100%; padding:10px; border-radius:6px; box-sizing:border-box;">
+  </div>
+  <div class="aform-group">
+    <label class="aform-label">নতুন পাসওয়ার্ড (New Password)</label>
+    <input type="password" id="apNewPass" placeholder="নতুন পাসওয়ার্ড লিখুন" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); width:100%; padding:10px; border-radius:6px; box-sizing:border-box;">
+  </div>
+  <button class="abtn abtn-cyan abtn-full" onclick="saveAdminPassword()" style="margin-top:10px;">
+    <i class="fa-solid fa-floppy-disk"></i> পাসওয়ার্ড সেভ করুন
+  </button>
 </div>
 
 </body>

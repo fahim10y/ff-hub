@@ -80,7 +80,7 @@ function load() {
   if (!Array.isArray(DB.modes)) {
     DB.modes = [];
   }
-  if (!DB.admins) {
+  if (!DB.admins || Object.keys(DB.admins).length === 0) {
     DB.admins = {
       "admin": { role: "main", password: "admin", perms: ['all'] }
     };
@@ -1516,14 +1516,14 @@ function adminLogin() {
   const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
   
-  if (!user || !pass) { toast('Username and password required!', 'error'); return; }
+  if (!user || !pass) { toast('ইউজারনেম ও পাসওয়ার্ড দিন!', 'error'); return; }
   
   if (DB.admins && DB.admins[user] && DB.admins[user].password === pass) {
     localStorage.setItem('adminSession', user);
     checkAdminSession();
-    toast('Login successful!', 'success');
+    toast('✅ লগইন সফল হয়েছে!', 'success');
   } else {
-    toast('Invalid username or password!', 'error');
+    toast('❌ ইউজারনেম বা পাসওয়ার্ড ভুল হয়েছে!', 'error');
   }
 }
 
@@ -1534,6 +1534,47 @@ function adminLogout() {
   document.getElementById('loginPass').value = '';
   checkAdminSession();
   toast('Logged out successfully', 'info');
+}
+
+// ── ADMIN SELF PASSWORD CHANGE ───────────────────
+function openAdminPassModal() {
+  document.getElementById('apCurrentPass').value = '';
+  document.getElementById('apNewPass').value = '';
+  document.getElementById('adminPassModalOverlay').style.display = 'block';
+  document.getElementById('adminPassModal').style.display = 'block';
+}
+
+function closeAdminPassModal() {
+  document.getElementById('adminPassModalOverlay').style.display = 'none';
+  document.getElementById('adminPassModal').style.display = 'none';
+}
+
+function saveAdminPassword() {
+  if (!currentAdmin) { toast('আপনি লগইন করেননি!', 'error'); return; }
+  const currentPass = document.getElementById('apCurrentPass').value.trim();
+  const newPass     = document.getElementById('apNewPass').value.trim();
+
+  if (!currentPass || !newPass) {
+    toast('বর্তমান ও নতুন পাসওয়ার্ড দুটোই দিন!', 'error'); return;
+  }
+  if (newPass.length < 4) {
+    toast('পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে!', 'error'); return;
+  }
+
+  load();
+  const username = currentAdmin.username;
+  if (!DB.admins[username]) { toast('এডমিন পাওয়া যায়নি!', 'error'); return; }
+
+  if (DB.admins[username].password !== currentPass) {
+    toast('বর্তমান পাসওয়ার্ড ভুল হয়েছে!', 'error'); return;
+  }
+
+  DB.admins[username].password = newPass;
+  save();
+  toast('✅ পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে!', 'success');
+  closeAdminPassModal();
+  // Force re-login with new password
+  adminLogout();
 }
 
 function checkAdminSession() {
@@ -1726,27 +1767,40 @@ checkAdminSession();
     const res = await fetch('/api/data');
     if (res.ok) {
       const serverData = await res.json();
-      if (serverData && typeof serverData === 'object' && Object.keys(serverData).length > 0) {
-        // Always overwrite localStorage with server data
-        localStorage.setItem('ffhub_db', JSON.stringify(serverData));
-        // Reload everything with fresh server data
-        load();
-        // Re-validate session with fresh server data
-        checkAdminSession();
-        updateBadges();
-        // Re-render the active tab
-        const activeTab = document.querySelector('.atab-pane.active');
-        if (activeTab) {
-          const tabId = activeTab.id.replace('tab-', '');
-          if (tabId === 'users') renderUsers();
-          else if (tabId === 'deposits') renderDeposits();
-          else if (tabId === 'withdrawals') renderWithdrawals();
-          else if (tabId === 'matches') { populateModeSelects(); renderMatchList(); }
-          else if (tabId === 'results') { populateMatchSelects(); renderResultHistory(); }
-          else if (tabId === 'notify') populateMatchSelects();
-          else if (tabId === 'modes') renderModes();
-          else if (tabId === 'settings') loadSettingsToForm();
+      const hasData = serverData && typeof serverData === 'object' && Object.keys(serverData).length > 0;
+
+      if (hasData) {
+        // Read current localStorage so we can preserve admins if server lacks them
+        let localData = {};
+        try { localData = JSON.parse(localStorage.getItem('ffhub_db') || '{}'); } catch(e) {}
+
+        // If server data has NO admins (or empty admins), inherit from localStorage
+        if (!serverData.admins || Object.keys(serverData.admins).length === 0) {
+          if (localData.admins && Object.keys(localData.admins).length > 0) {
+            serverData.admins = localData.admins;
+          }
         }
+
+        localStorage.setItem('ffhub_db', JSON.stringify(serverData));
+      }
+
+      // Always reload + re-validate session (works for both empty and full server data)
+      load();
+      checkAdminSession();
+      updateBadges();
+
+      // Re-render the active tab
+      const activeTab = document.querySelector('.atab-pane.active');
+      if (activeTab) {
+        const tabId = activeTab.id.replace('tab-', '');
+        if (tabId === 'users') renderUsers();
+        else if (tabId === 'deposits') renderDeposits();
+        else if (tabId === 'withdrawals') renderWithdrawals();
+        else if (tabId === 'matches') { populateModeSelects(); renderMatchList(); }
+        else if (tabId === 'results') { populateMatchSelects(); renderResultHistory(); }
+        else if (tabId === 'notify') populateMatchSelects();
+        else if (tabId === 'modes') renderModes();
+        else if (tabId === 'settings') loadSettingsToForm();
       }
     }
   } catch(e) {
