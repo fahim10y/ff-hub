@@ -90,13 +90,21 @@
         <span class="anav-label">Settings</span>
         <span class="anav-badge"></span>
       </a>
+      <a href="#" class="anav-item" onclick="aTab('admins',this)" id="nav-admins">
+        <span class="anav-icon"><i class="fa-solid fa-user-shield"></i></span>
+        <span class="anav-label">Sub Admins</span>
+        <span class="anav-badge"></span>
+      </a>
     </nav>
 
-    <div class="sidebar-footer">
+    <div class="sidebar-footer" style="display:flex; flex-direction:column; gap:8px;">
       <a href="../index.html" class="goto-app-btn">
         <i class="fa-solid fa-mobile-screen-button"></i> User App
         <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:0.7rem;"></i>
       </a>
+      <button class="abtn abtn-red abtn-full" onclick="adminLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
     </div>
   </aside>
 
@@ -416,7 +424,7 @@
 
 
         <!-- Manual Balance -->
-        <div class="acard" style="margin-top:16px;">
+        <div class="acard" id="manualBalanceCard" style="margin-top:16px;">
           <div class="acard-header"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold)"></i> ম্যানুয়াল ব্যালেন্স সমন্বয়</div>
           <div class="aform-group">
             <label class="aform-label">ইউজার মোবাইল বা UID</label>
@@ -609,7 +617,7 @@
             </div>
           </div>
         </div>
-<div class="acard" style="margin-top:16px;">
+        <div class="acard" style="margin-top:16px;">
           <div class="acard-header">
             <i class="fa-solid fa-credit-card" style="color:var(--gold)"></i> পেমেন্ট নম্বর সেটিংস
           </div>
@@ -631,6 +639,44 @@
             <i class="fa-solid fa-floppy-disk"></i> সমস্ত সেটিংস সেভ করুন
           </button>
         </div>
+      </div>
+
+      <!-- ══ TAB: SUB ADMINS ══ -->
+      <div id="tab-admins" class="atab-pane">
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-user-plus" style="color:var(--green)"></i> নতুন Sub-Admin তৈরি করুন</div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Username</label>
+              <input type="text" id="subAdminUser" placeholder="যেমন: manager_1">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Password</label>
+              <input type="text" id="subAdminPass" placeholder="পাসওয়ার্ড">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Permissions (কী কী করতে পারবে)</label>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; border:1px solid var(--border);">
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="users"> Users</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="deposits"> Deposits</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="withdrawals"> Withdrawals</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="matches"> Matches</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="results"> Results</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="notify"> Room Codes</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="modes"> Game Modes</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="settings"> Settings</label>
+            </div>
+          </div>
+          <button class="abtn abtn-cyan abtn-full" onclick="addSubAdmin()">
+            <i class="fa-solid fa-plus"></i> Sub-Admin যুক্ত করুন
+          </button>
+        </div>
+
+        <div class="section-label">
+          <i class="fa-solid fa-users-gear"></i> বর্তমান Admins
+        </div>
+        <div id="allAdminsList"></div>
       </div>
 
     </div><!-- .admin-content -->
@@ -721,6 +767,27 @@
   <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
     <button id="umBanBtn" class="abtn abtn-red abtn-full" onclick="toggleUserBan()">
       <i class="fa-solid fa-ban"></i> ইউজারকে Ban করুন
+    </button>
+  </div>
+</div>
+
+<!-- ── ADMIN LOGIN MODAL ── -->
+<div id="adminLoginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0d14; z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column;">
+  <div style="text-align:center; margin-bottom:20px;">
+    <i class="fa-solid fa-shield-halved" style="font-size:3rem; color:var(--primary);"></i>
+    <h2 style="color:var(--text); margin-top:10px; font-family:'Orbitron', sans-serif;">ADMIN LOGIN</h2>
+  </div>
+  <div class="acard" style="width:90%; max-width:350px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); border:1px solid rgba(0,240,255,0.2);">
+    <div class="aform-group">
+      <label class="aform-label">Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username">
+    </div>
+    <div class="aform-group">
+      <label class="aform-label">Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password">
+    </div>
+    <button class="abtn abtn-cyan abtn-full" onclick="adminLogin()">
+      <i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard
     </button>
   </div>
 </div>

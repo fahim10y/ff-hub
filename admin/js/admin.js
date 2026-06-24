@@ -80,6 +80,11 @@ function load() {
   if (!Array.isArray(DB.modes)) {
     DB.modes = [];
   }
+  if (!DB.admins) {
+    DB.admins = {
+      "admin": { role: "main", password: "admin", perms: ['all'] }
+    };
+  }
 }
 
 function save() { 
@@ -294,9 +299,17 @@ const TAB_TITLES = {
   notify: '<i class="fa-solid fa-bell"></i> Room Codes \u0026 Balance',
   modes: '<i class="fa-solid fa-layer-group"></i> Game Modes Management',
   settings: '<i class="fa-solid fa-sliders"></i> App Settings',
+  admins: '<i class="fa-solid fa-user-shield"></i> Sub Admins',
 };
 
 function aTab(name, el) {
+  if (currentAdmin && currentAdmin.role !== 'main') {
+    if (name === 'admins' || !currentAdmin.perms || !currentAdmin.perms.includes(name)) {
+      toast('আপনার এই সেকশনে অ্যাক্সেস করার অনুমতি নেই!', 'error');
+      return;
+    }
+  }
+
   document.querySelectorAll('.anav-item').forEach(x => x.classList.remove('active'));
   const navEl = document.getElementById('nav-' + name);
   if (navEl) navEl.classList.add('active');
@@ -317,6 +330,7 @@ function aTab(name, el) {
   if (name === 'notify')      { populateMatchSelects(); }
   if (name === 'modes')       renderModes();
   if (name === 'settings')    { loadSettingsToForm(); loadModeRulesForm(); }
+  if (name === 'admins')      renderAdmins();
 
   updateBadges();
 
@@ -441,6 +455,7 @@ function closeUserModal() {
 }
 
 function saveUserPassword() {
+  if (!hasPermission('users')) { toast('আপনার এই পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   if (!currentModalUserPhone) return;
   const newPass = document.getElementById('umNewPass').value.trim();
   if (newPass.length < 4) {
@@ -457,6 +472,7 @@ function saveUserPassword() {
 }
 
 function toggleUserBan() {
+  if (!hasPermission('users')) { toast('আপনার ইউজার ব্যান করার অনুমতি নেই!', 'error'); return; }
   if (!currentModalUserPhone) return;
   load();
   if (DB.users[currentModalUserPhone]) {
@@ -509,6 +525,7 @@ function renderDeposits() {
 }
 
 function approveDeposit(id) {
+  if (!hasPermission('deposits')) { toast('আপনার ডিপোজিট অ্যাপ্রুভ করার অনুমতি নেই!', 'error'); return; }
   load();
   const dep = DB.deposits.find(d => d.id == id);
   if (!dep) return;
@@ -527,6 +544,7 @@ function approveDeposit(id) {
 }
 
 function rejectDeposit(id) {
+  if (!hasPermission('deposits')) { toast('আপনার ডিপোজিট রিজেক্ট করার অনুমতি নেই!', 'error'); return; }
   load();
   const dep = DB.deposits.find(d => d.id == id);
   if (!dep) return;
@@ -587,6 +605,7 @@ function renderWithdrawals() {
 }
 
 function approveWithdraw(id) {
+  if (!hasPermission('withdrawals')) { toast('আপনার উইথড্র অ্যাপ্রুভ করার অনুমতি নেই!', 'error'); return; }
   load();
   const w = DB.withdrawals.find(x => x.id == id);
   if (!w) return;
@@ -608,6 +627,7 @@ function approveWithdraw(id) {
 }
 
 function rejectWithdraw(id) {
+  if (!hasPermission('withdrawals')) { toast('আপনার উইথড্র রিজেক্ট করার অনুমতি নেই!', 'error'); return; }
   load();
   const w = DB.withdrawals.find(x => x.id == id);
   if (!w) return;
@@ -683,6 +703,7 @@ function calcPrizePreview() {
 }
 
 function submitResult() {
+  if (!hasPermission('results')) { toast('আপনার রেজাল্ট পাবলিশ করার অনুমতি নেই!', 'error'); return; }
   if (!foundPlayerPhone) { toast('আগে Player সিলেক্ট করুন!', 'error'); return; }
   load();
 
@@ -744,6 +765,7 @@ function submitResult() {
 
 // ── ROOM NOTIFY ─────────────────────────────────
 function sendRoomNotify() {
+  if (!hasPermission('notify')) { toast('আপনার রুম কোড পাবলিশ করার অনুমতি নেই!', 'error'); return; }
   const rid  = document.getElementById('roomID').value.trim();
   const pass = document.getElementById('roomPass').value.trim();
   const tid  = currentNotifyMatchId;
@@ -787,6 +809,10 @@ function renderResultHistory() {
 
 // ── MANUAL BALANCE ADJUST ──────────────────────────
 function manualBalance() {
+  if (currentAdmin && currentAdmin.role !== 'main') {
+    toast('শুধুমাত্র মেইন এডমিন ম্যানুয়াল ব্যালেন্স আপডেট করতে পারবেন!', 'error');
+    return;
+  }
   load();
   const q   = document.getElementById('manualUID').value.trim().toLowerCase();
   const amt = parseInt(document.getElementById('manualAmt').value);
@@ -967,6 +993,7 @@ function renderBanners() {
 }
 
 function addBanner() {
+  if (!hasPermission('settings')) { toast('আপনার সেটিংস পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   load();
   const img = document.getElementById('newBannerImg').value.trim();
   const link = document.getElementById('newBannerLink').value.trim();
@@ -995,6 +1022,7 @@ function addBanner() {
 }
 
 function removeBanner(index) {
+  if (!hasPermission('settings')) { toast('আপনার সেটিংস পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   load();
   if(DB.settings.banners && DB.settings.banners[index]) {
     DB.settings.banners.splice(index, 1);
@@ -1031,6 +1059,7 @@ function handleBgImageUpload(input) {
 }
 
 function saveBgImage() {
+  if (!hasPermission('settings')) { toast('আপনার সেটিংস পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   load();
   const urlInput = document.getElementById('cfgBgUrl');
   const url = urlInput ? urlInput.value.trim() : '';
@@ -1058,6 +1087,7 @@ function saveBgImage() {
 }
 
 function removeBgImage() {
+  if (!hasPermission('settings')) { toast('আপনার সেটিংস পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   load();
   DB.settings.bgImage = '';
   save();
@@ -1066,10 +1096,11 @@ function removeBgImage() {
   document.getElementById('bgFileName').textContent = '\u0995\u09CB\u09A8\u09CB \u09AB\u09BE\u0987\u09B2 \u09B8\u09BF\u09B2\u09C7\u0995\u09CD\u099F \u0995\u09B0\u09BE \u09B9\u09AF\u09BC\u09A8\u09BF';
   const preview = document.getElementById('bgImgPreview');
   if (preview) preview.style.display = 'none';
-  toast('\u09AC\u09CD\u09AF\u09BE\u0995\u0997\u09CD\u09B0\u09BE\u0989\u09A8\u09CD\u09A1 \u099B\u09AC\u09BF \u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE \u09B9\u09AF\u09BC\u09C7\u099B\u09C7!', 'info');
+  toast('\u09AC\u09CD\u09AF\u09BE\u0995\u0997\u09CD\u09B0\u09BE\u0989\u09A8\u09CD\u09A1 \u099B\u09AC\u09BF \u09e\u09c1\u099b\u09c7 \u09ab\u09c7\u09b2\u09be \u09b9\u09af\u09bc\u09c7\u099b\u09c7!', 'info');
 }
 
 function saveSettings() {
+  if (!hasPermission('settings')) { toast('আপনার সেটিংস পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   load();
   
   DB.settings.liveLink = document.getElementById('cfgLiveLink').value.trim();
@@ -1096,6 +1127,7 @@ function saveSettings() {
 
 // ── MATCH MANAGEMENT ────────────────────────────
 function addMatch() {
+  if (!hasPermission('matches')) { toast('আপনার ম্যাচ তৈরি করার অনুমতি নেই!', 'error'); return; }
   load();
   const name     = document.getElementById('mName').value.trim();
   const cat      = document.getElementById('mCategory').value;
@@ -1184,12 +1216,14 @@ function renderMatchList() {
 }
 
 function updateMatchStatus(id, newStatus) {
+  if (!hasPermission('matches')) { toast('আপনার ম্যাচ পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   load();
   const m = DB.matches.find(x => String(x.id) === String(id));
   if (m) { m.status = newStatus; save(); toast('ম্যাচ Status আপডেট হয়েছে!', 'success'); }
 }
 
 function deleteMatch(id) {
+  if (!hasPermission('matches')) { toast('আপনার ম্যাচ ডিলিট করার অনুমতি নেই!', 'error'); return; }
   if (!confirm('⚠️ এই ম্যাচটি মুছে ফেলবেন? এর সঙ্গে যুক্ত সকল প্লেয়ার ডাটা, রুম কোড ও রেজাল্টও মুছে যাবে!')) return;
   load();
   const match = DB.matches.find(x => String(x.id) === String(id));
@@ -1415,6 +1449,7 @@ function renderModes() {
 }
 
 function addCustomMode() {
+  if (!hasPermission('modes')) { toast('আপনার গেম মোড পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   load();
   const name  = document.getElementById('modeName').value.trim();
   const tag   = document.getElementById('modeTag').value.trim().toLowerCase().replace(/\s+/g, '_');
@@ -1460,6 +1495,7 @@ function addCustomMode() {
 }
 
 function deleteCustomMode(id) {
+  if (!hasPermission('modes')) { toast('আপনার গেম মোড পরিবর্তন করার অনুমতি নেই!', 'error'); return; }
   const mode = (DB.modes || []).find(m => m.id === id);
   const name = mode ? mode.name : 'এই মোড';
   if (!confirm(`⚠️ "${name}" মুছে ফেলবেন? এটি গেম মোড তালিকা থেকে সরিয়ে ফেলা হবে!`)) return;
@@ -1470,6 +1506,189 @@ function deleteCustomMode(id) {
   renderModes();
   populateModeSelects();
   updateBadges();
+}
+
+// ── ADMIN LOGIN & SUB ADMIN SYSTEM ────────────
+let currentAdmin = null;
+
+function adminLogin() {
+  load();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  
+  if (!user || !pass) { toast('Username and password required!', 'error'); return; }
+  
+  if (DB.admins && DB.admins[user] && DB.admins[user].password === pass) {
+    localStorage.setItem('adminSession', user);
+    checkAdminSession();
+    toast('Login successful!', 'success');
+  } else {
+    toast('Invalid username or password!', 'error');
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem('adminSession');
+  currentAdmin = null;
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  checkAdminSession();
+  toast('Logged out successfully', 'info');
+}
+
+function checkAdminSession() {
+  const session = localStorage.getItem('adminSession');
+  if (session && DB.admins && DB.admins[session]) {
+    currentAdmin = DB.admins[session];
+    currentAdmin.username = session; // store username on object
+    const overlay = document.getElementById('adminLoginOverlay');
+    if(overlay) overlay.style.display = 'none';
+    applyPermissions();
+  } else {
+    const overlay = document.getElementById('adminLoginOverlay');
+    if(overlay) overlay.style.display = 'flex';
+  }
+}
+
+function hasPermission(perm) {
+  if (!currentAdmin) return false;
+  if (currentAdmin.role === 'main') return true;
+  if (currentAdmin.perms && currentAdmin.perms.includes(perm)) return true;
+  return false;
+}
+
+function applyPermissions() {
+  if (!currentAdmin) return;
+  
+  const allTabs = ['users', 'deposits', 'withdrawals', 'matches', 'results', 'notify', 'modes', 'settings', 'admins'];
+  
+  // Toggle Manual Balance card visibility
+  const mbCard = document.getElementById('manualBalanceCard');
+  if (mbCard) {
+    mbCard.style.display = (currentAdmin.role === 'main') ? 'block' : 'none';
+  }
+
+  if (currentAdmin.role === 'main') {
+    allTabs.forEach(tab => {
+      const navEl = document.getElementById('nav-' + tab);
+      if (navEl) navEl.style.display = 'flex';
+    });
+    // If no active tab or currently on admins and allowed, keep it. Otherwise default to users.
+    const activeTabEl = document.querySelector('.anav-item.active');
+    if (!activeTabEl) {
+      const fTab = document.getElementById('nav-users');
+      if(fTab) fTab.click();
+    }
+  } else {
+    let firstAllowed = null;
+    allTabs.forEach(tab => {
+      const navEl = document.getElementById('nav-' + tab);
+      if (!navEl) return;
+      if (tab === 'admins') {
+        navEl.style.display = 'none'; // Sub admins can never manage admins
+      } else if (currentAdmin.perms && currentAdmin.perms.includes(tab)) {
+        navEl.style.display = 'flex';
+        if (!firstAllowed) firstAllowed = tab;
+      } else {
+        navEl.style.display = 'none';
+      }
+    });
+    
+    // Switch to first allowed tab only if the current tab is not allowed
+    const activeTabEl = document.querySelector('.anav-item.active');
+    const currentActiveTab = activeTabEl ? activeTabEl.id.replace('nav-', '') : '';
+    if (!currentActiveTab || currentActiveTab === 'admins' || !currentAdmin.perms.includes(currentActiveTab)) {
+      if (firstAllowed) {
+        const fTab = document.getElementById('nav-' + firstAllowed);
+        if (fTab) fTab.click();
+      } else {
+        toast('আপনার কোনো পারমিশন দেওয়া নেই!', 'error');
+      }
+    }
+  }
+}
+
+function renderAdmins() {
+  load();
+  if (currentAdmin?.role !== 'main') return;
+  
+  const el = document.getElementById('allAdminsList');
+  if (!el) return;
+  
+  const admins = Object.keys(DB.admins).map(k => ({ username: k, ...DB.admins[k] }));
+  
+  el.innerHTML = admins.map(a => `
+    <div class="req-card" style="margin-bottom:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:0.95rem;">
+            <i class="fa-solid fa-user-shield" style="color:${a.role==='main'?'var(--gold)':'var(--cyan)'}"></i> ${a.username}
+          </div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">
+            Role: <span style="color:var(--secondary);font-weight:700;">${a.role.toUpperCase()}</span>
+            ${a.role === 'sub' ? ` | Perms: ${a.perms.join(', ')}` : ''}
+          </div>
+        </div>
+        ${a.role !== 'main' ? `
+        <div>
+          <button class="abtn abtn-red" style="padding:6px 12px;font-size:0.8rem;" onclick="deleteSubAdmin('${a.username}')">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function addSubAdmin() {
+  load();
+  if (currentAdmin?.role !== 'main') {
+    toast('শুধুমাত্র মেইন এডমিন সাব-এডমিন তৈরি করতে পারবেন!', 'error');
+    return;
+  }
+  
+  const user = document.getElementById('subAdminUser').value.trim();
+  const pass = document.getElementById('subAdminPass').value.trim();
+  
+  if (!user || !pass) { toast('Username and Password required!', 'error'); return; }
+  if (DB.admins[user]) { toast('Username already exists!', 'error'); return; }
+  
+  const checkedPerms = Array.from(document.querySelectorAll('.sa-perm:checked')).map(cb => cb.value);
+  if (checkedPerms.length === 0) { toast('Select at least one permission!', 'error'); return; }
+  
+  DB.admins[user] = {
+    role: 'sub',
+    password: pass,
+    perms: checkedPerms
+  };
+  
+  save();
+  toast('Sub Admin added!', 'success');
+  
+  document.getElementById('subAdminUser').value = '';
+  document.getElementById('subAdminPass').value = '';
+  document.querySelectorAll('.sa-perm').forEach(cb => cb.checked = false);
+  
+  renderAdmins();
+}
+
+function deleteSubAdmin(username) {
+  load();
+  if (currentAdmin?.role !== 'main') {
+    toast('শুধুমাত্র মেইন এডমিন সাব-এডমিন ডিলিট করতে পারবেন!', 'error');
+    return;
+  }
+  if (!DB.admins[username]) return;
+  if (DB.admins[username].role === 'main') {
+    toast('Cannot delete main admin!', 'error'); return;
+  }
+  
+  if (!confirm(`Delete sub-admin ${username}?`)) return;
+  
+  delete DB.admins[username];
+  save();
+  toast('Sub Admin deleted', 'info');
+  renderAdmins();
 }
 
 // ── BIND EVENT LISTENERS ─────────────────────────
@@ -1497,6 +1716,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 load();
+checkAdminSession();
 
 // ── SERVER SYNC: Fetch latest data from db.json (async) ──
 // The server (db.json) is the SINGLE SOURCE OF TRUTH for cross-browser consistency.
@@ -1511,6 +1731,8 @@ load();
         localStorage.setItem('ffhub_db', JSON.stringify(serverData));
         // Reload everything with fresh server data
         load();
+        // Re-validate session with fresh server data
+        checkAdminSession();
         updateBadges();
         // Re-render the active tab
         const activeTab = document.querySelector('.atab-pane.active');

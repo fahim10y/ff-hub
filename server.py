@@ -130,8 +130,11 @@ class FFHubHandler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         """Nicer coloured-ish logging."""
-        method, path, code = args[0], args[1], args[2]
-        print(f"  [{method}] {path} → {code}")
+        try:
+            # Standard python HTTP server log formatting
+            print(f"  [LOG] {format % args}")
+        except Exception:
+            print(f"  [LOG] {format} {args}")
 
 
 def main():
