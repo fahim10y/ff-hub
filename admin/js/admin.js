@@ -1519,45 +1519,14 @@ function deleteCustomMode(id) {
 // ── ADMIN LOGIN & SUB ADMIN SYSTEM ────────────
 let currentAdmin = null;
 
-// Returns true if admin password has never been set (first time setup)
+// Always returns false — login is disabled
 function isFirstTimeSetup() {
-  load();
-  const mainAdmin = Object.values(DB.admins || {}).find(a => a.role === 'main');
-  return !mainAdmin || mainAdmin.password === '' || mainAdmin.password === null || mainAdmin.password === undefined;
+  return false;
 }
 
+// Login disabled — auto-login as main admin
 function adminLogin() {
-  load();
-  const pass = document.getElementById('loginPass').value.trim();
-
-  if (!pass) {
-    showLoginError('পাসওয়ার্ড দিন!', 'error');
-    return;
-  }
-
-  // Find the main admin
-  const mainAdminKey = Object.keys(DB.admins || {}).find(k => DB.admins[k].role === 'main');
-  if (!mainAdminKey) {
-    showLoginError('❌ সিস্টেম এরর! পেজ রিফ্রেশ করুন।', 'error');
-    return;
-  }
-
-  if (DB.admins[mainAdminKey].password === pass) {
-    localStorage.setItem('adminSession', mainAdminKey);
-    checkAdminSession();
-    toast('✅ লগইন সফল হয়েছে!', 'success');
-  } else {
-    showLoginError('❌ পাসওয়ার্ড ভুল! আবার চেষ্টা করুন।', 'error');
-    // Shake animation on the password field
-    const passEl = document.getElementById('loginPass');
-    if (passEl) {
-      passEl.style.animation = 'none';
-      passEl.offsetHeight; // reflow
-      passEl.style.animation = 'loginShake 0.4s ease';
-      passEl.value = '';
-      passEl.focus();
-    }
-  }
+  checkAdminSession();
 }
 
 // First-time password setup (no old password needed)
@@ -1600,14 +1569,9 @@ function showLoginError(msg, type) {
 }
 
 function adminLogout() {
-  localStorage.removeItem('adminSession');
-  currentAdmin = null;
-  const lp = document.getElementById('loginPass');
-  if (lp) lp.value = '';
-  const le = document.getElementById('loginError');
-  if (le) le.style.display = 'none';
+  // Login disabled — logout just reloads the admin session
   checkAdminSession();
-  toast('Logged out successfully', 'info');
+  toast('Session refreshed', 'info');
 }
 
 // ── ADMIN SELF PASSWORD CHANGE ───────────────────
@@ -1653,34 +1617,16 @@ function saveAdminPassword() {
 function checkAdminSession() {
   load();
   const overlay = document.getElementById('adminLoginOverlay');
-
-  // CASE 1: First-time setup — no password set yet → bypass login, show setup screen
-  if (isFirstTimeSetup()) {
-    currentAdmin = null;
-    localStorage.removeItem('adminSession');
-    if (overlay) {
-      overlay.style.display = 'flex';
-      _showLoginView('setup');
-    }
-    return;
+  // Login completely disabled — always grant main admin access
+  const mainAdminKey = Object.keys(DB.admins || {}).find(k => DB.admins[k].role === 'main') || 'admin';
+  if (!DB.admins) DB.admins = {};
+  if (!DB.admins[mainAdminKey]) {
+    DB.admins[mainAdminKey] = { role: 'main', password: '', perms: ['all'] };
   }
-
-  // CASE 2: Valid session stored
-  const session = localStorage.getItem('adminSession');
-  if (session && DB.admins && DB.admins[session]) {
-    currentAdmin = DB.admins[session];
-    currentAdmin.username = session;
-    if (overlay) overlay.style.display = 'none';
-    applyPermissions();
-    return;
-  }
-
-  // CASE 3: No session → show password login
-  currentAdmin = null;
-  if (overlay) {
-    overlay.style.display = 'flex';
-    _showLoginView('login');
-  }
+  currentAdmin = DB.admins[mainAdminKey];
+  currentAdmin.username = mainAdminKey;
+  if (overlay) overlay.style.display = 'none';
+  applyPermissions();
 }
 
 // Toggle between login form and first-time setup form inside the overlay
@@ -1875,27 +1821,30 @@ checkAdminSession();
       const hasData = serverData && typeof serverData === 'object' && Object.keys(serverData).length > 0;
 
       if (hasData) {
-        // ── ADMIN DATA MERGE STRATEGY ──
-        // Always preserve admins from whichever source has a REAL password set.
-        // Priority: localStorage (most recent user action) > server (db.json)
+        // ── SMART MERGE STRATEGY ──
+        // Use localStorage as the base (has all game data: users, matches, etc.)
+        // Merge server data on top, but handle admins with special priority logic.
         let localData = {};
         try { localData = JSON.parse(localStorage.getItem('ffhub_db') || '{}'); } catch(e) {}
 
-        const localHasRealAdmin = localData.admins &&
-          Object.values(localData.admins).some(a => a.role === 'main' && a.password && a.password !== '');
+        // Merge: localData is base, serverData fields override (for game data)
+        const mergedData = Object.assign({}, localData, serverData);
+
         const serverHasRealAdmin = serverData.admins &&
           Object.values(serverData.admins).some(a => a.role === 'main' && a.password && a.password !== '');
+        const localHasRealAdmin = localData.admins &&
+          Object.values(localData.admins).some(a => a.role === 'main' && a.password && a.password !== '');
 
-        if (localHasRealAdmin) {
-          // Trust localStorage admins — user has set password here
-          serverData.admins = localData.admins;
-        } else if (!serverHasRealAdmin) {
-          // Neither has a real password — keep blank (first-time setup)
-          serverData.admins = { "admin": { role: "main", password: "", perms: ['all'] } };
+        // Admin priority: SERVER > local (db.json is the source of truth for credentials)
+        if (serverHasRealAdmin) {
+          mergedData.admins = serverData.admins;
+        } else if (localHasRealAdmin) {
+          mergedData.admins = localData.admins;
+        } else {
+          mergedData.admins = { "admin": { role: "main", password: "", perms: ['all'] } };
         }
-        // else: server has real admins and local doesn't → use server admins (already in serverData)
 
-        localStorage.setItem('ffhub_db', JSON.stringify(serverData));
+        localStorage.setItem('ffhub_db', JSON.stringify(mergedData));
       }
 
       load();
