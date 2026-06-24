@@ -290,51 +290,47 @@
           <button class="abtn" onclick="backToResMatchList()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
             <i class="fa-solid fa-arrow-left"></i> অন্য ম্যাচ সিলেক্ট করুন
           </button>
-          
-          <div class="acard">
-            <div class="acard-header"><i class="fa-solid fa-trophy" style="color:var(--gold)"></i> <span id="resSelectedMatchTitle">ম্যাচ</span></div>
 
-        <!-- Step 2: Players list for that match -->
-        <div class="section-label"><i class="fa-solid fa-users"></i> জয়েন করা প্লেয়ার তালিকা</div>
-        <div id="matchPlayersList">
-          <div class="aempty"><i class="fa-solid fa-users"></i><span>ম্যাচ সিলেক্ট করুন</span></div>
-        </div>
+          <div class="section-label"><i class="fa-solid fa-users"></i> <span id="resSelectedMatchTitle">ম্যাচ</span> — জয়েন করা প্লেয়ার তালিকা</div>
+          <div id="matchPlayersList">
+            <div class="aempty"><i class="fa-solid fa-users"></i><span>ম্যাচ সিলেক্ট করুন</span></div>
+          </div>
 
-        <!-- Step 3: Give result to selected player -->
-        <div class="acard" id="giveResultCard" style="display:none; margin-top:16px;">
-          <div class="acard-header"><i class="fa-solid fa-star" style="color:var(--gold)"></i> ফলাফল দিন — <span id="resultPlayerName" style="color:var(--green)"></span></div>
-          <div id="foundPlayer"></div>
-          <div class="aform-row">
-            <div class="aform-group">
-              <label class="aform-label">Total Kills</label>
-              <input type="number" id="resKills" placeholder="Kill সংখ্যা" min="0" oninput="calcPrizePreview()">
-            </div>
-            <div class="aform-group">
-              <label class="aform-label">Placement</label>
-              <div class="aselect-wrap">
-                <select id="resPlacement" onchange="calcPrizePreview()">
-                  <option value="0">No Placement</option>
-                  <option value="1">🥇 1st (Winner)</option>
-                  <option value="2">🥈 2nd Place</option>
-                  <option value="3">🥉 3rd Place</option>
-                  <option value="4">4th Place</option>
-                  <option value="5">5th Place</option>
-                </select>
+          <div class="acard" id="giveResultCard" style="display:none; margin-top:16px;">
+            <div class="acard-header"><i class="fa-solid fa-star" style="color:var(--gold)"></i> ফলাফল দিন — <span id="resultPlayerName" style="color:var(--green)"></span></div>
+            <div id="foundPlayer"></div>
+            <div class="aform-row">
+              <div class="aform-group">
+                <label class="aform-label">Total Kills</label>
+                <input type="number" id="resKills" placeholder="Kill সংখ্যা" min="0" oninput="calcPrizePreview()">
+              </div>
+              <div class="aform-group">
+                <label class="aform-label">Placement</label>
+                <div class="aselect-wrap">
+                  <select id="resPlacement" onchange="calcPrizePreview()">
+                    <option value="0">No Placement</option>
+                    <option value="1">🥇 1st (Winner)</option>
+                    <option value="2">🥈 2nd Place</option>
+                    <option value="3">🥉 3rd Place</option>
+                    <option value="4">4th Place</option>
+                    <option value="5">5th Place</option>
+                  </select>
+                </div>
               </div>
             </div>
+            <div id="prizePreview" class="prize-preview-box" style="display:none;"></div>
+            <button class="abtn abtn-green abtn-full" onclick="submitResult()">
+              <i class="fa-solid fa-circle-check"></i> প্রাইজ দিন
+            </button>
+            <button class="abtn abtn-red abtn-full" onclick="cancelResultSelect()" style="margin-top:8px;">
+              <i class="fa-solid fa-xmark"></i> বাতিল করুন
+            </button>
           </div>
-          <div id="prizePreview" class="prize-preview-box" style="display:none;"></div>
-          <button class="abtn abtn-green abtn-full" onclick="submitResult()">
-            <i class="fa-solid fa-circle-check"></i> প্রাইজ দিন
-          </button>
-          <button class="abtn abtn-red abtn-full" onclick="cancelResultSelect()" style="margin-top:8px;">
-            <i class="fa-solid fa-xmark"></i> বাতিল করুন
-          </button>
-        </div>
 
-        <div class="section-label" style="margin-top:12px;"><i class="fa-solid fa-clock-rotate-left"></i> সাম্প্রতিক পুরস্কার ইতিহাস</div>
-        <div id="resultHistory"><div class="aempty"><i class="fa-solid fa-inbox"></i><span>কোনো ইতিহাস নেই</span></div></div>
+          <div class="section-label" style="margin-top:12px;"><i class="fa-solid fa-clock-rotate-left"></i> সাম্প্রতিক পুরস্কার ইতিহাস</div>
+          <div id="resultHistory"><div class="aempty"><i class="fa-solid fa-inbox"></i><span>কোনো ইতিহাস নেই</span></div></div>
         </div> <!-- End of resActionView -->
+      </div> <!-- End of tab-results -->
       </div>
 
       <!-- ══ TAB: NOTIFY ══ -->
@@ -356,28 +352,28 @@
         </div>
 
         <!-- View 3: Room Code Form for Selected Match -->
-        <div id="notifyActionView" style="display:none;">
-          <button class="abtn" onclick="backToNotifyMatchList()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
-            <i class="fa-solid fa-arrow-left"></i> অন্য ম্যাচ সিলেক্ট করুন
-          </button>
-          
-          <div class="acard">
-            <div class="acard-header"><i class="fa-solid fa-key" style="color:var(--secondary)"></i> <span id="notifySelectedMatchTitle">ম্যাচ</span> — রুম আইডি ও পাসওয়ার্ড</div>
-          <div class="aform-row">
-            <div class="aform-group">
-              <label class="aform-label">Match Room ID</label>
-              <input type="text" id="roomID" placeholder="Room ID টাইপ করুন">
-            </div>
-            <div class="aform-group">
-              <label class="aform-label">Room Password</label>
-              <input type="text" id="roomPass" placeholder="Password টাইপ করুন">
-            </div>
-          </div>
-          <button class="abtn abtn-cyan abtn-full" onclick="sendRoomNotify()">
-            <i class="fa-solid fa-bell"></i> Room Code পাবলিশ করুন
-          </button>
-        </div>
-        </div> <!-- End of notifyActionView -->
+        <div id="notifyActionView" style="display:none;">
+          <button class="abtn" onclick="backToNotifyMatchList()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
+            <i class="fa-solid fa-arrow-left"></i> অন্য ম্যাচ সিলেক্ট করুন
+          </button>
+
+          <div class="acard">
+            <div class="acard-header"><i class="fa-solid fa-key" style="color:var(--secondary)"></i> <span id="notifySelectedMatchTitle">ম্যাচ</span> — রুম আইডি ও পাসওয়ার্ড</div>
+            <div class="aform-row">
+              <div class="aform-group">
+                <label class="aform-label">Match Room ID</label>
+                <input type="text" id="roomID" placeholder="Room ID টাইপ করুন">
+              </div>
+              <div class="aform-group">
+                <label class="aform-label">Room Password</label>
+                <input type="text" id="roomPass" placeholder="Password টাইপ করুন">
+              </div>
+            </div>
+            <button class="abtn abtn-cyan abtn-full" onclick="sendRoomNotify()">
+              <i class="fa-solid fa-bell"></i> Room Code পাবলিশ করুন
+            </button>
+          </div>
+        </div> <!-- End of notifyActionView -->
 
         <!-- Manual Balance -->
         <div class="acard" style="margin-top:16px;">

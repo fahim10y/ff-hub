@@ -139,9 +139,20 @@ function populateMatchSelects() {
     `).join('');
   }
 
-  // Reset to default views when repopulating
-  backToResModes();
-  backToNotifyModes();
+  // Reset to default views when repopulating (safely)
+  const rModeView = document.getElementById('resModeView');
+  const rMatchListView = document.getElementById('resMatchListView');
+  const rActionView = document.getElementById('resActionView');
+  if (rModeView) rModeView.style.display = 'block';
+  if (rMatchListView) rMatchListView.style.display = 'none';
+  if (rActionView) rActionView.style.display = 'none';
+
+  const nModeView = document.getElementById('notifyModeView');
+  const nMatchListView = document.getElementById('notifyMatchListView');
+  const nActionView = document.getElementById('notifyActionView');
+  if (nModeView) nModeView.style.display = 'block';
+  if (nMatchListView) nMatchListView.style.display = 'none';
+  if (nActionView) nActionView.style.display = 'none';
 }
 
 function selectResMode(tag) {
