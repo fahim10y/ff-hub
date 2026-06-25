@@ -16,9 +16,54 @@ import webbrowser
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
+# Optional PostgreSQL support for Render
+try:
+    import psycopg2
+except ImportError:
+    psycopg2 = None
+
 # Directory where this script lives (FF Hub root)
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_FILE = os.path.join(ROOT_DIR, 'db.json')
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+def get_db_connection():
+    if DATABASE_URL and psycopg2:
+        try:
+            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+            return conn
+        except Exception as e:
+            print(f"Error connecting to Postgres: {e}")
+    return None
+
+def init_postgres():
+    conn = get_db_connection()
+    if conn:
+        try:
+            with conn.cursor() as cur:
+                cur.execute('''
+                    CREATE TABLE IF NOT EXISTS store (
+                        id INT PRIMARY KEY,
+                        data JSONB
+                    )
+                ''')
+                cur.execute('SELECT id FROM store WHERE id = 1')
+                if not cur.fetchone():
+                    # If db.json exists, migrate data from it
+                    initial_data = "{}"
+                    if os.path.exists(DB_FILE):
+                        with open(DB_FILE, 'r', encoding='utf-8') as f:
+                            initial_data = f.read()
+                    cur.execute("INSERT INTO store (id, data) VALUES (1, %s::jsonb)", (initial_data,))
+            conn.commit()
+        except Exception as e:
+            print(f"Error initializing Postgres: {e}")
+        finally:
+            conn.close()
+
+if DATABASE_URL and psycopg2:
+    init_postgres()
+
 
 
 class FFHubHandler(BaseHTTPRequestHandler):
@@ -46,7 +91,23 @@ class FFHubHandler(BaseHTTPRequestHandler):
             self._send_cors_headers()
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
-            if os.path.exists(DB_FILE):
+            
+            conn = get_db_connection()
+            if conn:
+                try:
+                    with conn.cursor() as cur:
+                        cur.execute('SELECT data FROM store WHERE id = 1')
+                        row = cur.fetchone()
+                        if row and row[0]:
+                            self.wfile.write(json.dumps(row[0]).encode('utf-8'))
+                        else:
+                            self.wfile.write(b'{}')
+                except Exception as e:
+                    print(f"Postgres Read Error: {e}")
+                    self.wfile.write(b'{}')
+                finally:
+                    conn.close()
+            elif os.path.exists(DB_FILE):
                 with open(DB_FILE, 'r', encoding='utf-8') as f:
                     self.wfile.write(f.read().encode('utf-8'))
             else:
@@ -108,9 +169,21 @@ class FFHubHandler(BaseHTTPRequestHandler):
 
             try:
                 data = json.loads(body.decode('utf-8'))
-                # Write to file with pretty-print for readability
-                with open(DB_FILE, 'w', encoding='utf-8') as f:
-                    json.dump(data, f, indent=2, ensure_ascii=False)
+                
+                conn = get_db_connection()
+                if conn:
+                    try:
+                        with conn.cursor() as cur:
+                            cur.execute('UPDATE store SET data = %s WHERE id = 1', (json.dumps(data),))
+                        conn.commit()
+                    except Exception as e:
+                        print(f"Postgres Write Error: {e}")
+                    finally:
+                        conn.close()
+                else:
+                    # Write to file with pretty-print for readability
+                    with open(DB_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(data, f, indent=2, ensure_ascii=False)
                 self.send_response(200)
                 self._send_cors_headers()
                 self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -154,18 +227,22 @@ def main():
     print('╠══════════════════════════════════════════════════╣')
     print(f'║   Main App:  http://localhost:{port}                ║')
     print(f'║   Admin:     http://localhost:{port}/admin/         ║')
-    print(f'║   DB File:   {os.path.basename(DB_FILE)}                      ║')
+    if DATABASE_URL and psycopg2:
+        print('║   DB Mode:   PostgreSQL (Render)                ║')
+    else:
+        print(f'║   DB File:   {os.path.basename(DB_FILE)}                      ║')
     print('╠══════════════════════════════════════════════════╣')
-    print('║  ✅ Data now persists on disk!                  ║')
+    print('║  ✅ Data now persists safely!                   ║')
     print('║  ✅ Restart server / close browser → data safe! ║')
     print('║  ═══════════════════════════════════════════════ ║')
     print('║  Press Ctrl+C to stop the server                ║')
     print('╚══════════════════════════════════════════════════╝')
     print()
 
-    # Open browser tabs
-    webbrowser.open(f'http://localhost:{port}')
-    webbrowser.open(f'http://localhost:{port}/admin/')
+    # Open browser tabs if running locally without DB
+    if not DATABASE_URL:
+        webbrowser.open(f'http://localhost:{port}')
+        webbrowser.open(f'http://localhost:{port}/admin/')
 
     try:
         server.serve_forever()

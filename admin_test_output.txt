@@ -1,0 +1,861 @@
+﻿<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control â FF HUB E-Sports</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+<!-- SCAN LINE OVERLAY -->
+<div class="admin-scanlines"></div>
+
+<!-- CORNER DECORATIONS -->
+<div class="corner-deco top-left"></div>
+<div class="corner-deco top-right"></div>
+<div class="corner-deco bottom-left"></div>
+<div class="corner-deco bottom-right"></div>
+
+<!-- ADMIN LAYOUT -->
+<div class="admin-layout">
+
+  <!-- ââ SIDEBAR ââ -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-logo-area">
+      <div class="admin-logo-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <div class="admin-logo-text">FF HUB</div>
+        <div class="admin-logo-sub">ADMIN CONTROL</div>
+      </div>
+    </div>
+
+    <!-- STATS PANEL -->
+    <div class="sidebar-stats">
+      <div class="ss-item">
+        <div class="ss-val" id="sbStatUsers">0</div>
+        <div class="ss-lbl">Total Users</div>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <div class="ss-val pending" id="sbStatPending">0</div>
+        <div class="ss-lbl">Pending</div>
+      </div>
+    </div>
+
+    <!-- NAV MENU -->
+    <nav class="admin-nav">
+      <a href="#" class="anav-item active" onclick="aTab('users',this)" id="nav-users">
+        <span class="anav-icon"><i class="fa-solid fa-users"></i></span>
+        <span class="anav-label">Users</span>
+        <span class="anav-badge" id="badge-users"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('deposits',this)" id="nav-deposits">
+        <span class="anav-icon"><i class="fa-solid fa-arrow-down-to-line"></i></span>
+        <span class="anav-label">Deposits</span>
+        <span class="anav-badge pending" id="badge-deposits"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('withdrawals',this)" id="nav-withdrawals">
+        <span class="anav-icon"><i class="fa-solid fa-money-bill-transfer"></i></span>
+        <span class="anav-label">Withdrawals</span>
+        <span class="anav-badge danger" id="badge-withdrawals"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('matches',this)" id="nav-matches">
+        <span class="anav-icon"><i class="fa-solid fa-gamepad"></i></span>
+        <span class="anav-label">Matches</span>
+        <span class="anav-badge" id="badge-matches"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('results',this)" id="nav-results">
+        <span class="anav-icon"><i class="fa-solid fa-trophy"></i></span>
+        <span class="anav-label">Match Results</span>
+        <span class="anav-badge"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('notify',this)" id="nav-notify">
+        <span class="anav-icon"><i class="fa-solid fa-bell"></i></span>
+        <span class="anav-label">Room Codes</span>
+        <span class="anav-badge"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('modes',this)" id="nav-modes">
+        <span class="anav-icon"><i class="fa-solid fa-layer-group"></i></span>
+        <span class="anav-label">Game Modes</span>
+        <span class="anav-badge" id="badge-modes"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('settings',this)" id="nav-settings">
+        <span class="anav-icon"><i class="fa-solid fa-sliders"></i></span>
+        <span class="anav-label">Settings</span>
+        <span class="anav-badge"></span>
+      </a>
+      <a href="#" class="anav-item" onclick="aTab('admins',this)" id="nav-admins">
+        <span class="anav-icon"><i class="fa-solid fa-user-shield"></i></span>
+        <span class="anav-label">Sub Admins</span>
+        <span class="anav-badge"></span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" style="display:flex; flex-direction:column; gap:8px;">
+      <a href="../index.html" class="goto-app-btn">
+        <i class="fa-solid fa-mobile-screen-button"></i> User App
+        <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:0.7rem;"></i>
+      </a>
+      <button class="abtn abtn-full" onclick="openAdminPassModal()" style="background:rgba(0,240,255,0.1); border:1px solid rgba(0,240,255,0.3); color:var(--cyan);">
+        <i class="fa-solid fa-key"></i> à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨
+      </button>
+      <button class="abtn abtn-red abtn-full" onclick="adminLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- ââ MAIN CONTENT ââ -->
+  <main class="admin-main">
+
+    <!-- TOP BAR -->
+    <header class="admin-topbar">
+      <button class="sidebar-toggle-btn" onclick="toggleAdminSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="topbar-title" id="topbarTitle">
+        <i class="fa-solid fa-users"></i> Users Management
+      </div>
+      <div class="topbar-right">
+        <div class="admin-live-badge">
+          <span class="pulse-dot"></span> LIVE SYSTEM
+        </div>
+        <div class="topbar-time" id="adminTime"></div>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <div class="admin-content">
+
+      <!-- ââ TAB: USERS ââ -->
+      <div id="tab-users" class="atab-pane active">
+        <!-- Search Box -->
+        <div class="acard search-card">
+          <div class="acard-header">
+            <i class="fa-solid fa-magnifying-glass"></i> à¦¸à¦¾à¦°à§à¦ à¦à¦à¦à¦¾à¦°
+          </div>
+          <div class="search-row">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-search search-icon-inner"></i>
+              <input type="text" id="searchQ" placeholder="à¦®à§à¦¬à¦¾à¦à¦², à¦¨à¦¾à¦®, FF à¦¨à¦¾à¦® à¦¬à¦¾ UID à¦¦à¦¿à¦¯à¦¼à§ à¦¸à¦¾à¦°à§à¦ à¦à¦°à§à¦¨...">
+            </div>
+            <button class="abtn abtn-cyan" onclick="searchUser()">
+              <i class="fa-solid fa-search"></i> Search
+            </button>
+          </div>
+        </div>
+        <div id="userResults" style="margin-bottom:12px;"></div>
+
+        <div class="section-label">
+          <i class="fa-solid fa-users"></i> à¦¸à¦à¦² à¦°à§à¦à¦¿à¦¸à§à¦à¦¾à¦°à§à¦¡ à¦à¦à¦à¦¾à¦°
+          <span class="section-count" id="userCount">0 à¦à¦¨</span>
+        </div>
+        <div id="allUsersList">
+          <div class="aempty"><i class="fa-solid fa-users"></i><span>à¦à§à¦¨à§ à¦à¦à¦à¦¾à¦° à¦¨à§à¦</span></div>
+        </div>
+      </div>
+
+      <!-- ââ TAB: DEPOSITS ââ -->
+      <div id="tab-deposits" class="atab-pane">
+        <div class="section-label">
+          <i class="fa-solid fa-arrow-down" style="color:var(--green)"></i> Pending à¦¡à¦¿à¦ªà§à¦à¦¿à¦ à¦°à¦¿à¦à§à¦¯à¦¼à§à¦¸à§à¦
+        </div>
+        <div id="depositList">
+          <div class="aempty"><i class="fa-solid fa-inbox"></i><span>à¦à§à¦¨à§ Pending à¦¡à¦¿à¦ªà§à¦à¦¿à¦ à¦¨à§à¦</span></div>
+        </div>
+      </div>
+
+      <!-- ââ TAB: WITHDRAWALS ââ -->
+      <div id="tab-withdrawals" class="atab-pane">
+        <div class="section-label">
+          <i class="fa-solid fa-arrow-up" style="color:var(--primary)"></i> Pending à¦à¦à¦¥à¦¡à§à¦° à¦°à¦¿à¦à§à¦¯à¦¼à§à¦¸à§à¦
+        </div>
+        <div id="withdrawList">
+          <div class="aempty"><i class="fa-solid fa-inbox"></i><span>à¦à§à¦¨à§ Pending à¦à¦à¦¥à¦¡à§à¦° à¦¨à§à¦</span></div>
+        </div>
+      </div>
+
+      <!-- ââ TAB: MATCHES ââ -->
+      <div id="tab-matches" class="atab-pane">
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-plus-circle" style="color:var(--green)"></i> à¦¨à¦¤à§à¦¨ à¦®à§à¦¯à¦¾à¦ à¦¤à§à¦°à¦¿ à¦à¦°à§à¦¨</div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">à¦®à§à¦¯à¦¾à¦à§à¦° à¦¨à¦¾à¦®</label>
+              <input type="text" id="mName" placeholder="à¦¯à§à¦®à¦¨: Squad Battle #5">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">à¦à§à¦¯à¦¾à¦à¦¾à¦à¦°à¦¿</label>
+              <div class="aselect-wrap">
+                <select id="mCategory">
+                  <option value="survival">BR Match</option>
+                  <option value="squad">CS 4vs4 / Squad</option>
+                  <option value="1vs1">Lone Wolf 1vs1</option>
+                  <option value="headshot">Headshot Only</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">à¦®à§à¦¡</label>
+              <div class="aselect-wrap">
+                <select id="mMode">
+                  <option value="Squad">Squad</option>
+                  <option value="Solo">Solo</option>
+                  <option value="Duo">Duo</option>
+                </select>
+              </div>
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">à¦®à§à¦¯à¦¾à¦ª</label>
+              <input type="text" id="mMap" placeholder="à¦¯à§à¦®à¦¨: Bermuda">
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Entry Fee (à§³)</label>
+              <input type="number" id="mFee" placeholder="à§©à§¦" min="0">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Prize Pool (à§³)</label>
+              <input type="number" id="mPrize" placeholder="à§¬à§¦à§¦" min="0">
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Per Kill (à§³)</label>
+              <input type="number" id="mPerKill" placeholder="à§§à§¦" min="0">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Max Slots</label>
+              <input type="number" id="mSlots" placeholder="à§ªà§®" min="1">
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Status</label>
+              <div class="aselect-wrap">
+                <select id="mStatus">
+                  <option value="upcoming">Upcoming</option>
+                  <option value="live">Live</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">à¦¸à¦®à¦¯à¦¼</label>
+              <input type="datetime-local" id="mTime">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Banner Image URL</label>
+            <input type="text" id="mImage" placeholder="https://... à¦¬à¦¾ img/modes/mode-br.jpg">
+            <div class="aform-hint">à¦®à§à¦¯à¦¾à¦ à¦à¦¾à¦°à§à¦¡à§à¦° à¦¬à§à¦¯à¦¾à¦à¦à§à¦°à¦¾à¦à¦¨à§à¦¡ à¦à¦¬à¦¿à¥¤</div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group"><label class="aform-label">ð¥ 1st (à§³)</label><input type="number" id="mP1" placeholder="à§©à§¦à§¦"></div>
+            <div class="aform-group"><label class="aform-label">ð¥ 2nd (à§³)</label><input type="number" id="mP2" placeholder="à§§à§«à§¦"></div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group"><label class="aform-label">ð¥ 3rd (à§³)</label><input type="number" id="mP3" placeholder="à§«à§¦"></div>
+            <div class="aform-group"><label class="aform-label">4th & 5th (à§³)</label><input type="number" id="mP4" placeholder="à§¨à§¦"></div>
+          </div>
+          <button class="abtn abtn-green abtn-full" onclick="addMatch()">
+            <i class="fa-solid fa-plus"></i> à¦®à§à¦¯à¦¾à¦ à¦¤à§à¦°à¦¿ à¦à¦°à§à¦¨
+          </button>
+        </div>
+        <div class="section-label">
+          <i class="fa-solid fa-list"></i> à¦¸à¦à¦² à¦®à§à¦¯à¦¾à¦
+          <span class="section-count" id="matchCount">0 à¦à¦¿</span>
+        </div>
+        <div id="allMatchesList"><div class="aempty"><i class="fa-solid fa-gamepad"></i><span>à¦à§à¦¨à§ à¦®à§à¦¯à¦¾à¦ à¦¨à§à¦</span></div></div>
+      </div>
+
+      <!-- ââ TAB: RESULTS ââ -->
+      <div id="tab-results" class="atab-pane">
+        
+        <!-- View 1: Select Mode -->
+        <div id="resModeView">
+          <div class="section-label"><i class="fa-solid fa-gamepad"></i> à¦à§à¦® à¦®à§à¦¡ à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à§à¦¨</div>
+          <div id="resModeGrid" class="admin-mode-grid"></div>
+        </div>
+
+        <!-- View 2: Match List for Selected Mode -->
+        <div id="resMatchListView" style="display:none;">
+          <button class="abtn" onclick="backToResModes()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
+            <i class="fa-solid fa-arrow-left"></i> à¦®à§à¦¡ à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨ à¦à¦°à§à¦¨
+          </button>
+          <div class="section-label"><i class="fa-solid fa-trophy"></i> <span id="resModeTitle">à¦®à§à¦¯à¦¾à¦</span> â à¦®à§à¦¯à¦¾à¦ à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à§à¦¨</div>
+          <div id="resMatchCardsList"></div>
+        </div>
+
+        <!-- View 3: Prize Form for Selected Match -->
+        <div id="resActionView" style="display:none;">
+          <button class="abtn" onclick="backToResMatchList()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
+            <i class="fa-solid fa-arrow-left"></i> à¦à¦¨à§à¦¯ à¦®à§à¦¯à¦¾à¦ à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à§à¦¨
+          </button>
+
+          <div class="section-label"><i class="fa-solid fa-users"></i> <span id="resSelectedMatchTitle">à¦®à§à¦¯à¦¾à¦</span> â à¦à¦¯à¦¼à§à¦¨ à¦à¦°à¦¾ à¦ªà§à¦²à§à¦¯à¦¼à¦¾à¦° à¦¤à¦¾à¦²à¦¿à¦à¦¾</div>
+          <div id="matchPlayersList">
+            <div class="aempty"><i class="fa-solid fa-users"></i><span>à¦®à§à¦¯à¦¾à¦ à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à§à¦¨</span></div>
+          </div>
+
+          <div class="acard" id="giveResultCard" style="display:none; margin-top:16px;">
+            <div class="acard-header"><i class="fa-solid fa-star" style="color:var(--gold)"></i> à¦«à¦²à¦¾à¦«à¦² à¦¦à¦¿à¦¨ â <span id="resultPlayerName" style="color:var(--green)"></span></div>
+            <div id="foundPlayer"></div>
+            <div class="aform-row">
+              <div class="aform-group">
+                <label class="aform-label">Total Kills</label>
+                <input type="number" id="resKills" placeholder="Kill à¦¸à¦à¦à§à¦¯à¦¾" min="0" oninput="calcPrizePreview()">
+              </div>
+              <div class="aform-group">
+                <label class="aform-label">Placement</label>
+                <div class="aselect-wrap">
+                  <select id="resPlacement" onchange="calcPrizePreview()">
+                    <option value="0">No Placement</option>
+                    <option value="1">ð¥ 1st (Winner)</option>
+                    <option value="2">ð¥ 2nd Place</option>
+                    <option value="3">ð¥ 3rd Place</option>
+                    <option value="4">4th Place</option>
+                    <option value="5">5th Place</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div id="prizePreview" class="prize-preview-box" style="display:none;"></div>
+            <button class="abtn abtn-green abtn-full" onclick="submitResult()">
+              <i class="fa-solid fa-circle-check"></i> à¦ªà§à¦°à¦¾à¦à¦ à¦¦à¦¿à¦¨
+            </button>
+            <button class="abtn abtn-red abtn-full" onclick="cancelResultSelect()" style="margin-top:8px;">
+              <i class="fa-solid fa-xmark"></i> à¦¬à¦¾à¦¤à¦¿à¦² à¦à¦°à§à¦¨
+            </button>
+          </div>
+          
+          <div style="margin-top:20px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:20px;">
+            <button class="abtn abtn-cyan abtn-full" onclick="markMatchCompletedRes()" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);">
+              <i class="fa-solid fa-flag-checkered"></i> All Prize Give Done (Complete Match)
+            </button>
+            <div style="font-size:0.75rem; color:var(--muted); text-align:center; margin-top:8px;">
+              à¦à¦ à¦¬à¦¾à¦à¦¨à§ à¦à§à¦²à¦¿à¦ à¦à¦°à¦²à§ à¦®à§à¦¯à¦¾à¦à¦à¦¿ à¦ªà§à¦°à¦¾à¦¤à¦¨ (Old) à¦¹à§à§ à¦¯à¦¾à¦¬à§ à¦à¦¬à¦ à¦à¦° à¦à¦ à¦²à¦¿à¦¸à§à¦à§ à¦à¦¸à¦¬à§ à¦¨à¦¾à¥¤
+            </div>
+          </div>
+
+          <div class="section-label" style="margin-top:12px;"><i class="fa-solid fa-clock-rotate-left"></i> à¦¸à¦¾à¦®à§à¦ªà§à¦°à¦¤à¦¿à¦ à¦ªà§à¦°à¦¸à§à¦à¦¾à¦° à¦à¦¤à¦¿à¦¹à¦¾à¦¸</div>
+          <div id="resultHistory"><div class="aempty"><i class="fa-solid fa-inbox"></i><span>à¦à§à¦¨à§ à¦à¦¤à¦¿à¦¹à¦¾à¦¸ à¦¨à§à¦</span></div></div>
+        </div> <!-- End of resActionView -->
+      </div> <!-- End of tab-results -->
+      </div>
+
+      <!-- ââ TAB: NOTIFY ââ -->
+      <div id="tab-notify" class="atab-pane">
+        
+        <!-- View 1: Select Mode -->
+        <div id="notifyModeView">
+          <div class="section-label"><i class="fa-solid fa-gamepad"></i> à¦à§à¦® à¦®à§à¦¡ à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à§à¦¨</div>
+          <div id="notifyModeGrid" class="admin-mode-grid"></div>
+        </div>
+
+        <!-- View 2: Match List for Selected Mode -->
+        <div id="notifyMatchListView" style="display:none;">
+          <button class="abtn" onclick="backToNotifyModes()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
+            <i class="fa-solid fa-arrow-left"></i> à¦®à§à¦¡ à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨ à¦à¦°à§à¦¨
+          </button>
+          <div class="section-label"><i class="fa-solid fa-key"></i> <span id="notifyModeTitle">à¦®à§à¦¯à¦¾à¦</span> â à¦®à§à¦¯à¦¾à¦ à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à§à¦¨</div>
+          <div id="notifyMatchCardsList"></div>
+        </div>
+
+        <!-- View 3: Room Code Form for Selected Match -->
+        <div id="notifyActionView" style="display:none;">
+
+          <button class="abtn" onclick="backToNotifyMatchList()" style="margin-bottom:12px; background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.1);">
+
+            <i class="fa-solid fa-arrow-left"></i> à¦à¦¨à§à¦¯ à¦®à§à¦¯à¦¾à¦ à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à§à¦¨
+
+          </button>
+
+
+
+          <div class="acard">
+
+            <div class="acard-header"><i class="fa-solid fa-key" style="color:var(--secondary)"></i> <span id="notifySelectedMatchTitle">à¦®à§à¦¯à¦¾à¦</span> â à¦°à§à¦® à¦à¦à¦¡à¦¿ à¦ à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡</div>
+
+            <div class="aform-row">
+
+              <div class="aform-group">
+
+                <label class="aform-label">Match Room ID</label>
+
+                <input type="text" id="roomID" placeholder="Room ID à¦à¦¾à¦à¦ª à¦à¦°à§à¦¨">
+
+              </div>
+
+              <div class="aform-group">
+
+                <label class="aform-label">Room Password</label>
+
+                <input type="text" id="roomPass" placeholder="Password à¦à¦¾à¦à¦ª à¦à¦°à§à¦¨">
+
+              </div>
+
+            </div>
+
+            <button class="abtn abtn-cyan abtn-full" onclick="sendRoomNotify()">
+
+              <i class="fa-solid fa-bell"></i> Room Code à¦ªà¦¾à¦¬à¦²à¦¿à¦¶ à¦à¦°à§à¦¨
+
+            </button>
+
+          </div>
+          
+          <div style="margin-top:20px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:20px;">
+            <button class="abtn abtn-cyan abtn-full" onclick="markMatchCompletedNotify()" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);">
+              <i class="fa-solid fa-flag-checkered"></i> All Prize Give Done (Complete Match)
+            </button>
+            <div style="font-size:0.75rem; color:var(--muted); text-align:center; margin-top:8px;">
+              à¦à¦ à¦¬à¦¾à¦à¦¨à§ à¦à§à¦²à¦¿à¦ à¦à¦°à¦²à§ à¦®à§à¦¯à¦¾à¦à¦à¦¿ à¦ªà§à¦°à¦¾à¦¤à¦¨ (Old) à¦¹à§à§ à¦¯à¦¾à¦¬à§ à¦à¦¬à¦ à¦à¦° à¦à¦ à¦²à¦¿à¦¸à§à¦à§ à¦à¦¸à¦¬à§ à¦¨à¦¾à¥¤
+            </div>
+          </div>
+
+        </div> <!-- End of notifyActionView -->
+
+
+        <!-- Manual Balance -->
+        <div class="acard" id="manualBalanceCard" style="margin-top:16px;">
+          <div class="acard-header"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--gold)"></i> à¦®à§à¦¯à¦¾à¦¨à§à¦¯à¦¼à¦¾à¦² à¦¬à§à¦¯à¦¾à¦²à§à¦¨à§à¦¸ à¦¸à¦®à¦¨à§à¦¬à¦¯à¦¼</div>
+          <div class="aform-group">
+            <label class="aform-label">à¦à¦à¦à¦¾à¦° à¦®à§à¦¬à¦¾à¦à¦² à¦¬à¦¾ UID</label>
+            <input type="text" id="manualUID" placeholder="à¦ªà§à¦²à§à¦¯à¦¼à¦¾à¦° à¦®à§à¦¬à¦¾à¦à¦² à¦¬à¦¾ UID à¦²à¦¿à¦à§à¦¨">
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">à¦ªà¦°à¦¿à¦®à¦¾à¦£ (à§³)</label>
+              <input type="number" id="manualAmt" placeholder="+à§§à§¦à§¦ à¦¬à¦¾ -à§«à§¦">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">à¦à¦¾à¦°à¦£ / à¦¨à§à¦</label>
+              <input type="text" id="manualNote" placeholder="à¦¯à§à¦®à¦¨: à¦°à§à¦«à¦¾à¦°à§à¦² à¦¬à§à¦¨à¦¾à¦¸">
+            </div>
+          </div>
+          <button class="abtn abtn-gold abtn-full" onclick="manualBalance()">
+            <i class="fa-solid fa-rotate"></i> à¦¬à§à¦¯à¦¾à¦²à§à¦¨à§à¦¸ à¦à¦ªà¦¡à§à¦ à¦à¦°à§à¦¨
+          </button>
+        </div>
+      </div>
+
+      <!-- ââ TAB: MODES ââ -->
+      <div id="tab-modes" class="atab-pane">
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-square-plus" style="color:var(--green)"></i> à¦¨à¦¤à§à¦¨ à¦à§à¦® à¦®à§à¦¡ à¦¯à§à¦à§à¦¤ à¦à¦°à§à¦¨</div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">à¦®à§à¦¡à§à¦° à¦¨à¦¾à¦® (Mode Name)</label>
+              <input type="text" id="modeName" placeholder="à¦¯à§à¦®à¦¨: Squad Battle CS">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">à¦«à¦¿à¦²à§à¦à¦¾à¦° à¦à§à¦¯à¦¾à¦ (Filter Tag)</label>
+              <input type="text" id="modeTag" placeholder="à¦¯à§à¦®à¦¨: cs_mode (à¦à§à¦ à¦¹à¦¾à¦¤à§à¦° à¦ à¦¸à§à¦ªà§à¦¸ à¦à¦¾à§à¦¾)">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">à¦®à§à¦¡ à¦ªà¦¿à¦à¦à¦¾à¦° (Image URL)</label>
+            <input type="text" id="modeImage" placeholder="à¦¯à§à¦®à¦¨: img/modes/mode-cs.jpg à¦¬à¦¾ à¦à¦¨à¦²à¦¾à¦à¦¨ à¦à¦¬à¦¿à¦° à¦²à¦¿à¦à§à¦">
+            <div class="aform-hint">à¦®à§à¦¡ à¦¸à¦¿à¦²à§à¦à¦¶à¦¨ à¦à§à¦°à¦¿à¦¡à§ à¦à¦ à¦à¦¬à¦¿à¦à¦¿ à¦¦à§à¦à¦¾à¦¨à§ à¦¹à¦¬à§à¥¤</div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">à¦à¦¥à¦¬à¦¾ à¦à¦¬à¦¿ à¦à¦ªà¦²à§à¦¡ à¦à¦°à§à¦¨ (Base64)</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <input type="file" id="modeFile" accept="image/*" onchange="handleModeImageUpload(this)" style="display:none;">
+              <button class="abtn abtn-cyan" onclick="document.getElementById('modeFile').click()">
+                <i class="fa-solid fa-upload"></i> à¦à¦¬à¦¿ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦à¦¨ à¦à¦°à§à¦¨
+              </button>
+              <span id="modeFileName" style="font-size:0.85rem; color:var(--muted)">à¦à§à¦¨à§ à¦«à¦¾à¦à¦² à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à¦¾ à¦¹à§à¦¨à¦¿</span>
+            </div>
+            <div id="modeImgPreview" style="margin-top:10px; display:none;">
+              <img src="" id="modePreviewImg" style="max-width:120px; border-radius:8px; border:1px solid var(--secondary); box-shadow:0 0 10px rgba(0,240,255,0.2);">
+            </div>
+          </div>
+          <button class="abtn abtn-green abtn-full" onclick="addCustomMode()">
+            <i class="fa-solid fa-plus"></i> à¦®à§à¦¡ à¦¯à§à¦à§à¦¤ à¦à¦°à§à¦¨
+          </button>
+        </div>
+
+        <div class="section-label">
+          <i class="fa-solid fa-layer-group"></i> à¦¬à¦°à§à¦¤à¦®à¦¾à¦¨ à¦à§à¦® à¦®à§à¦¡à¦¸à¦®à§à¦¹
+          <span class="section-count" id="modeCount">0 à¦à¦¿</span>
+        </div>
+        <div id="allModesList"><div class="aempty"><i class="fa-solid fa-gamepad"></i><span>à¦à§à¦¨à§ à¦®à§à¦¡ à¦¨à§à¦</span></div></div>
+      </div>
+
+      <!-- ââ TAB: SETTINGS ââ -->
+      <div id="tab-settings" class="atab-pane">
+        
+        <div class="acard">
+          <div class="acard-header">
+            <i class="fa-solid fa-images" style="color:var(--secondary)"></i> à¦¹à§à¦® à¦ªà§à¦ à¦¬à§à¦¯à¦¾à¦¨à¦¾à¦° (Slider)
+          </div>
+          <div id="bannerList" style="margin-bottom:12px;"></div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Banner Image URL (à¦à¦¥à¦¬à¦¾ à¦¨à¦¿à¦à§ à¦à¦ªà¦²à§à¦¡ à¦à¦°à§à¦¨)</label>
+              <input type="text" id="newBannerImg" placeholder="https://... à¦¬à¦¾ img/modes/ à¦à¦¬à¦¿à¦° à¦²à¦¿à¦à¦ à¦¦à¦¿à¦¨...">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Banner Link (Optional)</label>
+              <input type="text" id="newBannerLink" placeholder="à¦à§à¦²à¦¿à¦ à¦à¦°à¦²à§ à¦à§à¦¥à¦¾à§ à¦¯à¦¾à¦¬à§?">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">à¦à¦¥à¦¬à¦¾ à¦à¦¬à¦¿ à¦à¦ªà¦²à§à¦¡ à¦à¦°à§à¦¨</label>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <input type="file" id="bannerFile" accept="image/*" onchange="handleBannerImageUpload(this)" style="display:none;">
+              <button class="abtn abtn-cyan" onclick="document.getElementById('bannerFile').click()">
+                <i class="fa-solid fa-upload"></i> à¦¬à§à¦¯à¦¾à¦¨à¦¾à¦° à¦à¦¬à¦¿ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦à¦¨ à¦à¦°à§à¦¨
+              </button>
+              <span id="bannerFileName" style="font-size:0.85rem; color:var(--muted)">à¦à§à¦¨à§ à¦«à¦¾à¦à¦² à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à¦¾ à¦¹à§à¦¨à¦¿</span>
+            </div>
+            <div id="bannerImgPreview" style="margin-top:10px; display:none;">
+              <img src="" id="bannerPreviewImg" style="max-width:100%; max-height:120px; border-radius:8px; border:1px solid var(--secondary); box-shadow:0 0 10px rgba(0,240,255,0.2); object-fit:cover;">
+            </div>
+          </div>
+          <button class="abtn abtn-cyan abtn-full" onclick="addBanner()">
+            <i class="fa-solid fa-plus"></i> à¦¨à¦¤à§à¦¨ à¦¬à§à¦¯à¦¾à¦¨à¦¾à¦° à¦¯à§à¦à§à¦¤ à¦à¦°à§à¦¨
+          </button>
+        </div>
+
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-video" style="color:var(--secondary)"></i> à¦²à¦¾à¦à¦­ à¦¸à§à¦à§à¦°à¦¿à¦® à¦¸à§à¦à¦¿à¦à¦¸
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Live Stream Embed URL (YouTube/Twitch)</label>
+            <input type="text" id="cfgLiveLink" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+            <div class="aform-hint">à¦à¦à¦à¦¾à¦° à¦à§à¦¯à¦¾à¦ªà§à¦° Watch Live à¦à§à¦¯à¦¾à¦¬à§ à¦¦à§à¦à¦¾ à¦¯à¦¾à¦¬à§à¥¤ à¦«à¦¾à¦à¦à¦¾ à¦°à¦¾à¦à¦²à§ à¦¬à¦¨à§à¦§ à¦¥à¦¾à¦à¦¬à§à¥¤</div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Add Money Tutorial URL (YouTube)</label>
+            <input type="text" id="cfgTutorialLink" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+            <div class="aform-hint">Add Money à¦ªà§à¦à§ Tutorial à¦¹à¦¿à¦¸à§à¦¬à§ à¦¦à§à¦à¦¾ à¦¯à¦¾à¦¬à§à¥¤</div>
+          </div>
+        </div>
+
+        <!-- ââ PER-MODE CUSTOM RULES ââ -->
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-file-lines" style="color:var(--gold)"></i> ð à¦®à§à¦¯à¦¾à¦à§à¦° à¦¨à¦¿à¦¯à¦¼à¦® à¦¸à§à¦à¦¿à¦à¦¸ (Mode-wise Rules)
+          </div>
+          <div class="aform-sub" style="margin-bottom:14px; padding:0 6px;">
+            à¦ªà§à¦°à¦¤à¦¿à¦à¦¿ à¦à§à¦® à¦®à§à¦¡à§à¦° à¦à¦¨à§à¦¯ à¦à¦²à¦¾à¦¦à¦¾ à¦¨à¦¿à¦¯à¦¼à¦® à¦²à¦¿à¦à§à¦¨à¥¤ à¦à¦ªà¦¨à¦¿ à¦¯à§à¦à¦¾ à¦²à¦¿à¦à¦¬à§à¦¨, à¦¸à§à¦à¦¾à¦ à¦à¦à§à¦¤ à¦®à§à¦¡à§à¦° à¦¸à¦¬ à¦®à§à¦¯à¦¾à¦à§à¦°
+            "Match Rules" à¦à§à¦¯à¦¾à¦¬à§ à¦¦à§à¦à¦¾à¦¬à§à¥¤ à¦«à¦¾à¦à¦à¦¾ à¦°à¦¾à¦à¦²à§ à¦¡à¦¿à¦«à¦²à§à¦ à¦¨à¦¿à¦¯à¦¼à¦® à¦¦à§à¦à¦¾à¦¬à§à¥¤
+          </div>
+          <div id="modeRulesContainer">
+            <!-- Dynamically rendered by loadModeRulesForm() -->
+          </div>
+          <button class="abtn abtn-gold abtn-full" onclick="saveModeRules()" style="margin-top:12px;">
+            <i class="fa-solid fa-floppy-disk"></i> à¦¸à¦¬ à¦®à§à¦¡à§à¦° à¦¨à¦¿à¦¯à¦¼à¦® à¦¸à§à¦­ à¦à¦°à§à¦¨
+          </button>
+        </div>
+
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-image" style="color:var(--gold)"></i> ð¼ï¸ à¦à¦¯à¦¼à§à¦¬à¦¸à¦¾à¦à¦ à¦¬à§à¦¯à¦¾à¦à¦à§à¦°à¦¾à¦à¦¨à§à¦¡ à¦à¦¬à¦¿
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">à¦¬à§à¦¯à¦¾à¦à¦à§à¦°à¦¾à¦à¦¨à§à¦¡ Image URL (à¦à¦¥à¦¬à¦¾ à¦¨à¦¿à¦à§ à¦à¦ªà¦²à§à¦¡ à¦à¦°à§à¦¨)</label>
+            <input type="text" id="cfgBgUrl" placeholder="https://... à¦¬à¦¾ à¦à¦¬à¦¿à¦° à¦²à¦¿à¦à¦ à¦¦à¦¿à¦¨...">
+            <div class="aform-hint">à¦ªà§à¦°à§ à¦à¦¯à¦¼à§à¦¬à¦¸à¦¾à¦à¦à§à¦° à¦¬à§à¦¯à¦¾à¦à¦à§à¦°à¦¾à¦à¦¨à§à¦¡à§ à¦à¦ à¦à¦¬à¦¿à¦à¦¿ à¦¦à§à¦à¦¾ à¦¯à¦¾à¦¬à§à¥¤</div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">à¦à¦¥à¦¬à¦¾ à¦à¦¬à¦¿ à¦à¦ªà¦²à§à¦¡ à¦à¦°à§à¦¨</label>
+            <div class="bg-upload-row" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <input type="file" id="bgFile" accept="image/*" onchange="handleBgImageUpload(this)" style="display:none;">
+              <button class="abtn abtn-cyan" onclick="document.getElementById('bgFile').click()">
+                <i class="fa-solid fa-upload"></i> à¦à¦¬à¦¿ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦à¦¨ à¦à¦°à§à¦¨
+              </button>
+              <span id="bgFileName" style="font-size:0.85rem; color:var(--muted)">à¦à§à¦¨à§ à¦«à¦¾à¦à¦² à¦¸à¦¿à¦²à§à¦à§à¦ à¦à¦°à¦¾ à¦¹à¦¯à¦¼à¦¨à¦¿</span>
+            </div>
+            <div id="bgImgPreview" style="margin-top:10px; display:none;">
+              <img src="" id="bgPreviewImg" style="max-width:100%; max-height:150px; border-radius:8px; border:1px solid var(--secondary); box-shadow:0 0 10px rgba(0,240,255,0.2); object-fit:cover;">
+            </div>
+          </div>
+          <div class="bg-actions-row" style="display:flex; gap:10px; margin-top:12px;">
+            <button class="abtn abtn-green abtn-full" onclick="saveBgImage()">
+              <i class="fa-solid fa-floppy-disk"></i> à¦¬à§à¦¯à¦¾à¦à¦à§à¦°à¦¾à¦à¦¨à§à¦¡ à¦¸à§à¦­ à¦à¦°à§à¦¨
+            </button>
+            <button class="abtn abtn-red" onclick="removeBgImage()" style="flex:0.5;">
+              <i class="fa-solid fa-trash"></i> à¦®à§à¦à§à¦¨
+            </button>
+          </div>
+        </div>
+
+        
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-scale-balanced" style="color:var(--gold)"></i> à¦¡à¦¿à¦ªà§à¦à¦¿à¦ à¦ à¦à¦à¦¥à¦¡à§à¦° à¦²à¦¿à¦®à¦¿à¦
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">à¦¸à¦°à§à¦¬à¦¨à¦¿à¦®à§à¦¨ à¦¡à¦¿à¦ªà§à¦à¦¿à¦ (Min)</label>
+              <input type="number" id="cfgMinDep" placeholder="50">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">à¦¸à¦°à§à¦¬à§à¦à§à¦ à¦¡à¦¿à¦ªà§à¦à¦¿à¦ (Max)</label>
+              <input type="number" id="cfgMaxDep" placeholder="5000">
+            </div>
+          </div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">à¦¸à¦°à§à¦¬à¦¨à¦¿à¦®à§à¦¨ à¦à¦à¦¥à¦¡à§à¦° (Min)</label>
+              <input type="number" id="cfgMinWit" placeholder="100">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">à¦¸à¦°à§à¦¬à§à¦à§à¦ à¦à¦à¦¥à¦¡à§à¦° (Max)</label>
+              <input type="number" id="cfgMaxWit" placeholder="5000">
+            </div>
+          </div>
+        </div>
+        <div class="acard" style="margin-top:16px;">
+          <div class="acard-header">
+            <i class="fa-solid fa-credit-card" style="color:var(--gold)"></i> à¦ªà§à¦®à§à¦¨à§à¦ à¦¨à¦®à§à¦¬à¦° à¦¸à§à¦à¦¿à¦à¦¸
+          </div>
+          <div class="pay-settings-grid">
+            <div class="pay-settings-item bkash">
+              <div class="psi-label"><i class="fa-solid fa-heart"></i> bKash Personal</div>
+              <input type="text" id="cfgBkash" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="pay-settings-item nagad">
+              <div class="psi-label"><i class="fa-solid fa-gem"></i> Nagad Personal</div>
+              <input type="text" id="cfgNagad" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="pay-settings-item rocket">
+              <div class="psi-label"><i class="fa-solid fa-rocket"></i> Rocket Personal</div>
+              <input type="text" id="cfgRocket" placeholder="01XXXXXXXXX">
+            </div>
+          </div>
+          <button class="abtn abtn-green abtn-full" onclick="saveSettings()" style="margin-top:20px;">
+            <i class="fa-solid fa-floppy-disk"></i> à¦¸à¦®à¦¸à§à¦¤ à¦¸à§à¦à¦¿à¦à¦¸ à¦¸à§à¦­ à¦à¦°à§à¦¨
+          </button>
+        </div>
+      </div>
+
+      <!-- ââ TAB: SUB ADMINS ââ -->
+      <div id="tab-admins" class="atab-pane">
+        <div class="acard">
+          <div class="acard-header"><i class="fa-solid fa-user-plus" style="color:var(--green)"></i> à¦¨à¦¤à§à¦¨ Sub-Admin à¦¤à§à¦°à¦¿ à¦à¦°à§à¦¨</div>
+          <div class="aform-row">
+            <div class="aform-group">
+              <label class="aform-label">Username</label>
+              <input type="text" id="subAdminUser" placeholder="à¦¯à§à¦®à¦¨: manager_1">
+            </div>
+            <div class="aform-group">
+              <label class="aform-label">Password</label>
+              <input type="text" id="subAdminPass" placeholder="à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡">
+            </div>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Permissions (à¦à§ à¦à§ à¦à¦°à¦¤à§ à¦ªà¦¾à¦°à¦¬à§)</label>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; border:1px solid var(--border);">
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="users"> Users</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="deposits"> Deposits</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="withdrawals"> Withdrawals</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="matches"> Matches</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="results"> Results</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="notify"> Room Codes</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="modes"> Game Modes</label>
+              <label style="color:var(--text); font-size:0.85rem; cursor:pointer;"><input type="checkbox" class="sa-perm" value="settings"> Settings</label>
+            </div>
+          </div>
+          <button class="abtn abtn-cyan abtn-full" onclick="addSubAdmin()">
+            <i class="fa-solid fa-plus"></i> Sub-Admin à¦¯à§à¦à§à¦¤ à¦à¦°à§à¦¨
+          </button>
+        </div>
+
+        <div class="section-label">
+          <i class="fa-solid fa-users-gear"></i> à¦¬à¦°à§à¦¤à¦®à¦¾à¦¨ Admins
+        </div>
+        <div id="allAdminsList"></div>
+      </div>
+
+    </div><!-- .admin-content -->
+  </main>
+</div><!-- .admin-layout -->
+
+<!-- MOBILE SIDEBAR OVERLAY -->
+<div class="admin-overlay" id="adminOverlay" onclick="toggleAdminSidebar()"></div>
+
+<div id="toast"></div>
+<script src="js/admin.js"></script>
+<script>
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2,'0');
+    const m = now.getMinutes().toString().padStart(2,'0');
+    const s = now.getSeconds().toString().padStart(2,'0');
+    const el = document.getElementById('adminTime');
+    if (el) el.textContent = h + ':' + m + ':' + s;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Sidebar toggle (mobile)
+  function toggleAdminSidebar() {
+    document.getElementById('adminSidebar').classList.toggle('open');
+    document.getElementById('adminOverlay').classList.toggle('active');
+  }
+
+  function updateBadges() {
+    load();
+    const users = Object.values(DB.users || {});
+    const pendingDep = (DB.deposits || []).filter(d => d.status === 'pending').length;
+    const pendingWith = (DB.withdrawals || []).filter(w => w.status === 'pending').length;
+    const matchCount = (DB.matches || []).length;
+
+    const uCount = document.getElementById('userCount');
+    if (uCount) uCount.textContent = users.length + ' à¦à¦¨';
+
+    const matchCnt = document.getElementById('matchCount');
+    if (matchCnt) matchCnt.textContent = matchCount + ' à¦à¦¿';
+
+    const sbU = document.getElementById('sbStatUsers');
+    if (sbU) sbU.textContent = users.length;
+
+    const sbP = document.getElementById('sbStatPending');
+    if (sbP) sbP.textContent = pendingDep + pendingWith;
+
+    const bdep = document.getElementById('badge-deposits');
+    if (bdep) { bdep.textContent = pendingDep || ''; bdep.style.display = pendingDep ? 'flex' : 'none'; }
+
+    const bwith = document.getElementById('badge-withdrawals');
+    if (bwith) { bwith.textContent = pendingWith || ''; bwith.style.display = pendingWith ? 'flex' : 'none'; }
+
+    const bmatch = document.getElementById('badge-matches');
+    if (bmatch) { bmatch.textContent = matchCount || ''; bmatch.style.display = matchCount ? 'flex' : 'none'; }
+
+    const modeCount = (DB.modes || []).length;
+    const bmode = document.getElementById('badge-modes');
+    if (bmode) { bmode.textContent = modeCount || ''; bmode.style.display = modeCount ? 'flex' : 'none'; }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    load();
+    updateBadges();
+    renderMatchList();
+  });
+</script>
+
+<!-- ââ USER ACTION MODAL ââ -->
+<div class="admin-overlay" id="userModalOverlay" style="z-index: 1000;" onclick="closeUserModal()"></div>
+<div class="acard" id="userActionModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index: 1001; width:90%; max-width:400px; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+  <div class="acard-header" style="display:flex; justify-content:space-between; margin-bottom:10px;">
+    <span><i class="fa-solid fa-user-gear" style="color:var(--secondary)"></i> User Settings</span>
+    <button onclick="closeUserModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div id="umInfo" style="margin-bottom:15px; font-size:0.9rem; color:var(--text); line-height:1.4;"></div>
+  
+  <div class="aform-group">
+    <label class="aform-label">à¦¨à¦¤à§à¦¨ à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ (Change Password)</label>
+    <input type="text" id="umNewPass" placeholder="à¦¨à¦¤à§à¦¨ à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ à¦²à¦¿à¦à§à¦¨">
+  </div>
+  <button class="abtn abtn-cyan abtn-full" onclick="saveUserPassword()" style="margin-bottom:15px;">
+    <i class="fa-solid fa-key"></i> à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ à¦à¦ªà¦¡à§à¦ à¦à¦°à§à¦¨
+  </button>
+  
+  <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+    <button id="umBanBtn" class="abtn abtn-red abtn-full" onclick="toggleUserBan()">
+      <i class="fa-solid fa-ban"></i> à¦à¦à¦à¦¾à¦°à¦à§ Ban à¦à¦°à§à¦¨
+    </button>
+  </div>
+</div>
+
+<!-- ââ ADMIN LOGIN MODAL ââ -->
+<style>
+  @keyframes loginShake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-5px); }
+    80%      { transform: translateX(5px); }
+  }
+</style>
+<div id="adminLoginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0d14; z-index:9999; display:none; justify-content:center; align-items:center; flex-direction:column;">
+  <div style="text-align:center; margin-bottom:20px;">
+    <i class="fa-solid fa-shield-halved" style="font-size:3rem; color:var(--primary);"></i>
+    <h2 style="color:var(--text); margin-top:10px; font-family:'Orbitron', sans-serif;" id="loginOverlayTitle">ADMIN LOGIN</h2>
+  </div>
+
+  <!-- ââ PASSWORD LOGIN FORM ââ -->
+  <div id="adminLoginForm" class="acard" style="width:90%; max-width:350px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); border:1px solid rgba(0,240,255,0.2);">
+    <div style="font-size:0.82rem; color:var(--muted); text-align:center; margin-bottom:14px; padding:8px; background:rgba(0,240,255,0.05); border-radius:8px; border:1px solid rgba(0,240,255,0.1);">
+      <i class="fa-solid fa-lock" style="color:var(--secondary);"></i> à¦à¦ªà¦¨à¦¾à¦° à¦à¦¡à¦®à¦¿à¦¨ à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦¦à¦¿à¦¯à¦¼à§ à¦²à¦à¦à¦¨ à¦à¦°à§à¦¨
+    </div>
+    <div class="aform-group">
+      <label class="aform-label">à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡</label>
+      <input type="password" id="loginPass" placeholder="à¦à¦¡à¦®à¦¿à¦¨ à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦¦à¦¿à¦¨" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') adminLogin()" style="font-size:1rem; letter-spacing:2px;">
+    </div>
+    <button class="abtn abtn-cyan abtn-full" onclick="adminLogin()" style="margin-top:12px;">
+      <i class="fa-solid fa-right-to-bracket"></i> à¦²à¦à¦à¦¨ à¦à¦°à§à¦¨
+    </button>
+  </div>
+
+  <!-- ââ FIRST-TIME SETUP FORM ââ -->
+  <div id="adminSetupForm" class="acard" style="display:none; width:90%; max-width:380px; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); border:1px solid rgba(0,255,136,0.25);">
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="font-size:1.5rem;">ð</div>
+      <div style="font-weight:700; color:var(--green); font-size:1rem; margin-top:4px;">à¦ªà§à¦°à¦¥à¦®à¦¬à¦¾à¦° à¦¸à§à¦à¦à¦ª</div>
+      <div style="font-size:0.8rem; color:var(--muted); margin-top:6px; line-height:1.5;">
+        à¦à¦à¦¿ à¦à¦ªà¦¨à¦¾à¦° à¦ªà§à¦°à¦¥à¦® à¦­à¦¿à¦à¦¿à¦à¥¤ à¦à¦à¦à¦¿ à¦¨à¦¿à¦°à¦¾à¦ªà¦¦ à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦¤à§à¦°à¦¿ à¦à¦°à§à¦¨à¥¤<br>
+        à¦ªà¦°à§à¦° à¦¬à¦¾à¦° à¦à¦ à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦¦à¦¿à¦¯à¦¼à§à¦ à¦²à¦à¦à¦¨ à¦à¦°à¦¤à§ à¦¹à¦¬à§à¥¤
+      </div>
+    </div>
+    <div class="aform-group">
+      <label class="aform-label">à¦¨à¦¤à§à¦¨ à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦¤à§à¦°à¦¿ à¦à¦°à§à¦¨</label>
+      <input type="password" id="setupPass" placeholder="à¦à¦®à¦ªà¦à§à¦·à§ à§ª à¦à¦à§à¦·à¦°" autocomplete="new-password"
+             onkeydown="if(event.key==='Enter') document.getElementById('setupPass2').focus()"
+             style="font-size:1rem; letter-spacing:2px;">
+    </div>
+    <div class="aform-group">
+      <label class="aform-label">à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦à¦¬à¦¾à¦° à¦¦à¦¿à¦¨</label>
+      <input type="password" id="setupPass2" placeholder="à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦à¦¨à¦«à¦¾à¦°à§à¦® à¦à¦°à§à¦¨" autocomplete="new-password"
+             onkeydown="if(event.key==='Enter') adminFirstTimeSetup()"
+             style="font-size:1rem; letter-spacing:2px;">
+    </div>
+    <button class="abtn abtn-full" onclick="adminFirstTimeSetup()" style="margin-top:12px; background:linear-gradient(135deg,#00ff88,#00c853); color:#000; font-weight:800;">
+      <i class="fa-solid fa-key"></i> à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦¸à§à¦ à¦à¦°à§à¦¨ à¦ à¦¢à§à¦à§à¦¨
+    </button>
+  </div>
+
+  <!-- Shared error message box (shown below whichever form is active) -->
+  <div id="loginError" style="display:none; margin-top:12px; width:90%; max-width:380px; padding:10px; border-radius:8px; font-size:0.85rem; font-weight:700; text-align:center;"></div>
+</div>
+
+<!-- ââ ADMIN PASSWORD CHANGE MODAL ââ -->
+<div class="admin-overlay" id="adminPassModalOverlay" style="z-index: 10002; display:none;" onclick="closeAdminPassModal()"></div>
+<div class="acard" id="adminPassModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index: 10003; width:90%; max-width:380px; box-shadow:0 10px 30px rgba(0,0,0,0.8); background:rgba(10,13,20,0.95); backdrop-filter:blur(10px); border:1px solid rgba(0,240,255,0.2);">
+  <div class="acard-header" style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
+    <span><i class="fa-solid fa-key" style="color:var(--cyan)"></i> à¦ªà¦¾à¦¸à¦à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨ à¦à¦°à§à¦¨</span>
+    <button onclick="closeAdminPassModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="aform-group">
+    <label class="aform-label">à¦¬à¦°à§à¦¤à¦®à¦¾à¦¨ à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ (Current Password)</label>
+    <input type="password" id="apCurrentPass" placeholder="à¦¬à¦°à§à¦¤à¦®à¦¾à¦¨ à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ à¦²à¦¿à¦à§à¦¨" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); width:100%; padding:10px; border-radius:6px; box-sizing:border-box;">
+  </div>
+  <div class="aform-group">
+    <label class="aform-label">à¦¨à¦¤à§à¦¨ à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ (New Password)</label>
+    <input type="password" id="apNewPass" placeholder="à¦¨à¦¤à§à¦¨ à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ à¦²à¦¿à¦à§à¦¨" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); width:100%; padding:10px; border-radius:6px; box-sizing:border-box;">
+  </div>
+  <button class="abtn abtn-cyan abtn-full" onclick="saveAdminPassword()" style="margin-top:10px;">
+    <i class="fa-solid fa-floppy-disk"></i> à¦ªà¦¾à¦¸à¦à§à¦¾à¦°à§à¦¡ à¦¸à§à¦­ à¦à¦°à§à¦¨
+  </button>
+</div>
+
+</body>
+</html>
+

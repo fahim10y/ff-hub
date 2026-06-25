@@ -7,5 +7,250 @@
         "all"
       ]
     }
-  }
+  },
+  "settings": {
+    "liveLink": "https://www.youtube.com/embed/gU9yZgW1gYI",
+    "tutorialLink": "https://www.youtube.com/embed/xR2zB27C174",
+    "bgImage": "",
+    "payNumbers": {
+      "bkash": "01712-345678",
+      "nagad": "01812-345678",
+      "rocket": "01912-345678"
+    },
+    "banners": [
+      {
+        "img": "img/modes/mode-br.jpg",
+        "link": "https://t.me/yourtelegram"
+      },
+      {
+        "img": "img/modes/mode-cs.jpg",
+        "link": "https://wa.me/8801712345678"
+      }
+    ]
+  },
+  "users": {
+    "01620508562": {
+      "name": "Azizul Islam Fahim",
+      "phone": "01620508562",
+      "uid": "3531968902",
+      "ffname": "HHH_Fahim",
+      "pass": "0194",
+      "balance": 0,
+      "earnBalance": 0,
+      "totalPrize": 0,
+      "totalKills": 0,
+      "totalMatches": 0,
+      "supportPin": "192896",
+      "joinedDate": "Joined: June 24, 2026 at 08:51 PM"
+    }
+  },
+  "deposits": [],
+  "withdrawals": [],
+  "joined": {},
+  "history": {
+    "01620508562": []
+  },
+  "roomCodes": {},
+  "matches": [
+    {
+      "id": 1,
+      "name": "Survival Battle BR #1",
+      "map": "Bermuda",
+      "mode": "Solo",
+      "entryFee": 30,
+      "prizePool": 600,
+      "perKill": 10,
+      "placement": {
+        "1": 300,
+        "2": 150,
+        "3": 50,
+        "4": 20,
+        "5": 10
+      },
+      "maxSlots": 48,
+      "filledSlots": 20,
+      "status": "upcoming",
+      "time": "8:00 PM Today",
+      "image": "https://i.pinimg.com/originals/09/25/d7/0925d70ddda13dfc7bb618b056111166.jpg"
+    },
+    {
+      "id": 2,
+      "name": "CS 4 VS 4 Pro League #1",
+      "map": "Purgatory",
+      "mode": "Squad",
+      "entryFee": 100,
+      "prizePool": 2000,
+      "perKill": 20,
+      "placement": {
+        "1": 1000,
+        "2": 600,
+        "3": 200,
+        "4": 100,
+        "5": 0
+      },
+      "maxSlots": 16,
+      "filledSlots": 12,
+      "status": "live",
+      "time": "LIVE NOW",
+      "image": "https://i.pinimg.com/736x/8f/c9/2c/8fc92c2195f0fc98150ea13b192ea129.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Lone Wolf 1vs1 Showdown",
+      "map": "Iron Cage",
+      "mode": "Solo",
+      "entryFee": 20,
+      "prizePool": 400,
+      "perKill": 0,
+      "placement": {
+        "1": 300,
+        "2": 100,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "maxSlots": 2,
+      "filledSlots": 2,
+      "status": "live",
+      "time": "LIVE NOW",
+      "image": "https://i.pinimg.com/736x/21/df/b1/21dfb194d2105151b75bb27e7d6928e3.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Only Headshot Challenge #1",
+      "map": "Kalahari",
+      "mode": "Solo",
+      "entryFee": 50,
+      "prizePool": 1000,
+      "perKill": 25,
+      "placement": {
+        "1": 500,
+        "2": 300,
+        "3": 100,
+        "4": 50,
+        "5": 20
+      },
+      "maxSlots": 24,
+      "filledSlots": 24,
+      "status": "done",
+      "time": "Completed",
+      "image": "https://i.pinimg.com/736x/11/a6/f3/11a6f3b06db2388062de396959b8beec.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Squad Duo Rush",
+      "map": "Alpine",
+      "mode": "Duo",
+      "entryFee": 40,
+      "prizePool": 800,
+      "perKill": 15,
+      "placement": {
+        "1": 400,
+        "2": 250,
+        "3": 100,
+        "4": 50,
+        "5": 0
+      },
+      "maxSlots": 24,
+      "filledSlots": 10,
+      "status": "upcoming",
+      "time": "10:00 PM Today",
+      "image": "https://i.pinimg.com/736x/8f/c9/2c/8fc92c2195f0fc98150ea13b192ea129.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Lone Wolf 1vs1 Midnight",
+      "map": "Iron Cage",
+      "mode": "Solo",
+      "entryFee": 50,
+      "prizePool": 100,
+      "perKill": 0,
+      "placement": {
+        "1": 80,
+        "2": 20,
+        "3": 0,
+        "4": 0,
+        "5": 0
+      },
+      "maxSlots": 2,
+      "filledSlots": 0,
+      "status": "upcoming",
+      "time": "11:59 PM Today",
+      "image": "https://i.pinimg.com/736x/21/df/b1/21dfb194d2105151b75bb27e7d6928e3.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Only Headshot Masters #2",
+      "map": "Bermuda Remastered",
+      "mode": "Solo",
+      "entryFee": 20,
+      "prizePool": 500,
+      "perKill": 10,
+      "placement": {
+        "1": 250,
+        "2": 150,
+        "3": 50,
+        "4": 30,
+        "5": 20
+      },
+      "maxSlots": 48,
+      "filledSlots": 48,
+      "status": "done",
+      "time": "Completed",
+      "image": "https://i.pinimg.com/736x/11/a6/f3/11a6f3b06db2388062de396959b8beec.jpg"
+    },
+    {
+      "id": 8,
+      "name": "BR Match Championship",
+      "map": "NeXTerra",
+      "mode": "Squad",
+      "entryFee": 150,
+      "prizePool": 5000,
+      "perKill": 30,
+      "placement": {
+        "1": 3000,
+        "2": 1000,
+        "3": 500,
+        "4": 300,
+        "5": 200
+      },
+      "maxSlots": 12,
+      "filledSlots": 8,
+      "status": "upcoming",
+      "time": "Tomorrow, 08:00 PM",
+      "image": "https://i.pinimg.com/originals/09/25/d7/0925d70ddda13dfc7bb618b056111166.jpg"
+    }
+  ],
+  "modes": [
+    {
+      "id": "all",
+      "name": "All Matches",
+      "tag": "all",
+      "image": "img/modes/mode-all.jpg"
+    },
+    {
+      "id": "survival",
+      "name": "BR Match",
+      "tag": "survival",
+      "image": "img/modes/mode-br.jpg"
+    },
+    {
+      "id": "squad",
+      "name": "CS 4 VS 4",
+      "tag": "squad",
+      "image": "img/modes/mode-cs.jpg"
+    },
+    {
+      "id": "1vs1",
+      "name": "Lone Wolf",
+      "tag": "1vs1",
+      "image": "img/modes/mode-lonewolf.jpg"
+    },
+    {
+      "id": "headshot",
+      "name": "Headshot Only",
+      "tag": "headshot",
+      "image": "img/modes/mode-headshot.jpg"
+    }
+  ]
 }
